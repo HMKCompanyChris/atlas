@@ -1,0 +1,3696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>BJJ Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAF6F0;
+  --surface: #FFFFFF;
+  --surface2: #F0EBE3;
+  --text-primary: #2C1810;
+  --text-secondary: #6B5744;
+  --text-muted: #A89585;
+  --accent: #C4572A;
+  --gold: #B8860B;
+  --border: #DDD5C8;
+  --guard: #3D7EA6;
+  --top: #A63D3D;
+  --back: #3D7A5A;
+  --neutral: #8B7A3D;
+  --leg: #7A3D6A;
+  --sub: #B5352A;
+  --sweep: #2A8B7A;
+  --transition: #C4872A;
+  --shadow-sm: 0 1px 3px rgba(44,24,16,0.06), 0 1px 2px rgba(44,24,16,0.04);
+  --shadow-md: 0 4px 12px rgba(44,24,16,0.08), 0 2px 4px rgba(44,24,16,0.04);
+  --shadow-lg: 0 8px 24px rgba(44,24,16,0.10), 0 4px 8px rgba(44,24,16,0.06);
+  --shadow-xl: 0 16px 48px rgba(44,24,16,0.12), 0 8px 16px rgba(44,24,16,0.06);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; }
+body {
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text-primary);
+  touch-action:none;
+  overscroll-behavior:none;
+}
+
+/* ─── HEADER ─── */
+.header {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:env(safe-area-inset-top,12px) 16px 10px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.header-title {
+  font-size:20px; font-weight:800; letter-spacing:3px;
+  background:linear-gradient(135deg, var(--gold) 0%, #D4A017 50%, var(--gold) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.header-subtitle {
+  font-size:9px; font-weight:500; letter-spacing:1.5px;
+  color:var(--text-muted); text-transform:uppercase; margin-top:1px;
+}
+.header-right { display:flex; gap:8px; align-items:center; }
+.header-btn {
+  width:36px; height:36px; border-radius:10px; border:none;
+  background:var(--surface2); color:var(--text-secondary);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.2s;
+  font-size:16px;
+}
+.header-btn:active { transform:scale(0.92); background:var(--border); }
+.header-btn.active { background:var(--accent); color:white; }
+
+/* ─── LEGEND ─── */
+.legend {
+  position:fixed; top:72px; left:50%; transform:translateX(-50%); z-index:90;
+  display:flex; gap:14px; padding:6px 14px; border-radius:20px;
+  background:rgba(255,255,255,0.9); backdrop-filter:blur(10px);
+  border:1px solid var(--border); box-shadow:var(--shadow-sm);
+}
+.legend-item { display:flex; align-items:center; gap:4px; font-size:10px; font-weight:500; color:var(--text-secondary); }
+.legend-dot { width:7px; height:7px; border-radius:50%; }
+
+/* ─── QUICK INFO CARD ─── */
+.quick-card {
+  position:fixed; bottom:80px; left:12px; right:12px; z-index:95;
+  background:rgba(255,255,255,0.96);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-radius:16px; border:1px solid var(--border);
+  box-shadow:var(--shadow-lg);
+  padding:14px 16px;
+  transform:translateY(calc(100% + 100px));
+  transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
+  pointer-events:none;
+}
+.quick-card.open {
+  transform:translateY(0);
+  pointer-events:all;
+}
+.quick-card-header {
+  display:flex; align-items:center; gap:10px; margin-bottom:10px;
+}
+.quick-card-badge {
+  width:36px; height:36px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:800; color:white;
+}
+.quick-card-name {
+  font-size:16px; font-weight:700; color:var(--text-primary);
+}
+.quick-card-type {
+  font-size:11px; font-weight:500; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;
+}
+.quick-card-stats {
+  display:flex; gap:12px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border);
+}
+.quick-card-stat {
+  font-size:11px; color:var(--text-secondary);
+}
+.quick-card-stat strong {
+  color:var(--text-primary); font-weight:700;
+}
+.quick-card-actions {
+  display:flex; gap:8px;
+}
+.quick-card-btn {
+  flex:1; padding:10px; border-radius:10px; border:none;
+  font-size:13px; font-weight:600; font-family:inherit;
+  cursor:pointer; transition:all 0.2s;
+}
+.quick-card-btn:active { transform:scale(0.97); }
+.quick-card-btn.primary {
+  background:var(--accent); color:white;
+}
+.quick-card-btn.secondary {
+  background:var(--surface2); color:var(--text-secondary);
+}
+
+/* ─── CANVAS ─── */
+.canvas-container {
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  overflow:hidden; touch-action:none;
+}
+canvas { display:block; }
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:100;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  padding:6px 0 env(safe-area-inset-bottom,8px);
+  display:flex; justify-content:space-around;
+}
+.nav-item {
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding:6px 16px; border:none; background:none; cursor:pointer;
+  color:var(--text-muted); transition:color 0.2s;
+}
+.nav-item.active { color:var(--accent); }
+.nav-item svg { width:22px; height:22px; }
+.nav-label { font-size:10px; font-weight:500; }
+
+/* ─── FOCUS VIEW OVERLAY ─── */
+.focus-overlay {
+  position:fixed; top:0; left:0; right:0; bottom:0; z-index:200;
+  background:var(--bg);
+  transform:translateY(100%);
+  transition:transform 0.4s cubic-bezier(0.32,0.72,0,1);
+  overflow:hidden;
+}
+.focus-overlay.open { transform:translateY(0); }
+.focus-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:env(safe-area-inset-top,12px) 16px 10px;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(20px); border-bottom:1px solid var(--border);
+}
+.focus-back {
+  display:flex; align-items:center; gap:4px; border:none; background:none;
+  color:var(--accent); font-size:15px; font-weight:500; cursor:pointer;
+  font-family:inherit;
+}
+.focus-title { font-size:17px; font-weight:700; color:var(--text-primary); }
+
+.perspective-toggle {
+  display:flex; background:var(--surface2); border-radius:8px; padding:2px; margin:12px 16px 0;
+}
+.perspective-btn {
+  flex:1; padding:7px; border:none; border-radius:6px; font-size:12px;
+  font-weight:600; font-family:inherit; cursor:pointer;
+  background:transparent; color:var(--text-muted); transition:all 0.2s;
+}
+.perspective-btn.active {
+  background:white; color:var(--text-primary);
+  box-shadow:var(--shadow-sm);
+}
+
+.focus-canvas-wrap { flex:1; position:relative; }
+.focus-canvas { width:100%; height:100%; }
+
+/* ─── PANEL BACKDROP ─── */
+.panel-backdrop {
+  position:fixed; top:0; left:0; right:0; bottom:0; z-index:299;
+  background:rgba(44,24,16,0.2);
+  opacity:0; pointer-events:none;
+  transition:opacity 0.3s;
+}
+.panel-backdrop.open { opacity:1; pointer-events:all; }
+
+/* ─── DETAIL PANEL ─── */
+.detail-panel {
+  position:fixed; left:0; right:0; bottom:0; z-index:300;
+  background:white; border-radius:20px 20px 0 0;
+  box-shadow:var(--shadow-xl);
+  transform:translateY(100%);
+  transition:transform 0.4s cubic-bezier(0.32,0.72,0,1);
+  max-height:70vh; overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:env(safe-area-inset-bottom,20px);
+}
+.detail-panel.open { transform:translateY(0); }
+.detail-handle {
+  width:36px; height:4px; background:var(--border); border-radius:2px;
+  margin:8px auto 0;
+}
+.detail-content { padding:16px 20px; }
+.detail-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600;
+  margin-bottom:10px;
+}
+.detail-name { font-size:22px; font-weight:800; margin-bottom:4px; }
+.detail-desc { font-size:14px; color:var(--text-secondary); line-height:1.5; margin-bottom:16px; }
+
+.detail-section { margin-bottom:16px; }
+.detail-section-title {
+  font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  color:var(--text-muted); margin-bottom:8px;
+}
+.detail-card {
+  background:var(--surface2); border-radius:12px; padding:12px;
+  margin-bottom:6px;
+}
+.detail-card-title { font-size:13px; font-weight:600; margin-bottom:2px; }
+.detail-card-text { font-size:12px; color:var(--text-secondary); line-height:1.4; }
+.detail-mistake {
+  background:#FFF5F0; border-left:3px solid var(--accent); padding:10px 12px;
+  border-radius:0 10px 10px 0; margin-bottom:6px;
+}
+.detail-mistake-text { font-size:12px; color:var(--text-secondary); line-height:1.4; }
+
+.save-training-btn {
+  width:100%; padding:13px; border-radius:12px; border:1.5px solid var(--accent);
+  background:transparent; color:var(--accent); font-size:14px; font-weight:600;
+  cursor:pointer; font-family:inherit; transition:all 0.2s;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  margin-bottom:16px;
+}
+.save-training-btn:active { transform:scale(0.97); }
+.save-training-btn.saved {
+  background:var(--accent); color:white; border-color:var(--accent);
+}
+
+/* ─── TECHNIQUE POPUP ─── */
+.technique-popup {
+  position:fixed; left:0; right:0; bottom:0; z-index:350;
+  background:white; border-radius:20px 20px 0 0;
+  box-shadow:0 -8px 32px rgba(44,24,16,0.15);
+  transform:translateY(100%);
+  transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+  max-height:60vh; overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:8px 20px 20px;
+  padding-bottom:env(safe-area-inset-bottom,20px);
+}
+.technique-popup.open { transform:translateY(0); }
+.technique-popup-content { padding:8px 0; }
+.technique-popup-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px;
+}
+.technique-popup-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 10px; border-radius:6px; font-size:11px; font-weight:600;
+}
+.technique-popup-title { font-size:18px; font-weight:700; margin-top:6px; }
+.technique-popup-from-to {
+  font-size:12px; color:var(--text-secondary); margin-bottom:14px;
+  display:flex; align-items:center; gap:6px;
+}
+.technique-popup-steps { margin-top:8px; }
+.technique-popup-step {
+  display:flex; align-items:flex-start; gap:10px; margin-bottom:12px;
+}
+.technique-popup-step-num {
+  width:24px; height:24px; border-radius:12px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:white;
+}
+.technique-popup-step-text {
+  font-size:14px; color:var(--text-primary); line-height:1.5; padding-top:2px;
+}
+.technique-popup-close {
+  width:28px; height:28px; border-radius:14px; border:none;
+  background:var(--surface2); color:var(--text-secondary); font-size:16px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.technique-popup-close:active { transform:scale(0.9); }
+
+/* ─── TRAINING PLAN DRAWER ─── */
+.training-drawer {
+  position:fixed; top:0; left:0; right:0; bottom:0; z-index:400;
+  pointer-events:none;
+}
+.training-drawer.open { pointer-events:all; }
+.training-backdrop {
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  background:rgba(44,24,16,0.3); opacity:0;
+  transition:opacity 0.3s;
+}
+.training-drawer.open .training-backdrop { opacity:1; }
+.training-sheet {
+  position:absolute; left:0; right:0; bottom:0;
+  background:white; border-radius:20px 20px 0 0;
+  box-shadow:var(--shadow-xl);
+  transform:translateY(100%);
+  transition:transform 0.4s cubic-bezier(0.32,0.72,0,1);
+  max-height:85vh; overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:env(safe-area-inset-bottom,20px);
+}
+.training-drawer.open .training-sheet { transform:translateY(0); }
+.training-header {
+  padding:16px 20px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; background:white; z-index:1;
+}
+.training-title { font-size:18px; font-weight:700; }
+.training-close {
+  width:28px; height:28px; border-radius:14px; border:none;
+  background:var(--surface2); color:var(--text-secondary);
+  font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.training-body { padding:16px 20px; }
+.training-step { display:flex; align-items:flex-start; gap:10px; margin-bottom:16px; }
+.training-step-num {
+  width:24px; height:24px; border-radius:12px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:white;
+}
+.training-step-content { flex:1; }
+.training-step-title { font-size:14px; font-weight:600; margin-bottom:2px; }
+.training-step-desc { font-size:12px; color:var(--text-secondary); line-height:1.4; }
+
+.chip-grid { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+.chip {
+  padding:8px 14px; border-radius:10px; border:1.5px solid var(--border);
+  background:white; font-size:13px; font-weight:500; cursor:pointer;
+  transition:all 0.2s; font-family:inherit; color:var(--text-primary);
+}
+.chip:active { transform:scale(0.96); }
+.chip.selected { border-color:var(--accent); background:#FFF5F0; color:var(--accent); }
+
+.generate-btn {
+  width:100%; padding:14px; border-radius:14px; border:none;
+  background:linear-gradient(135deg, var(--accent), #D4652E);
+  color:white; font-size:15px; font-weight:700; cursor:pointer;
+  font-family:inherit; margin-top:8px; transition:all 0.2s;
+  box-shadow:0 4px 12px rgba(196,87,42,0.3);
+}
+.generate-btn:active { transform:scale(0.97); }
+
+.plan-output { margin-top:16px; }
+.plan-week {
+  background:var(--surface2); border-radius:14px; padding:14px;
+  margin-bottom:10px;
+}
+.plan-week-title { font-size:13px; font-weight:700; margin-bottom:6px; color:var(--accent); }
+.plan-drill { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.plan-drill-dot { width:6px; height:6px; border-radius:3px; flex-shrink:0; }
+.plan-drill-text { font-size:12px; color:var(--text-secondary); }
+
+/* ─── SEARCH ─── */
+.search-overlay {
+  position:fixed; top:0; left:0; right:0; bottom:0; z-index:500;
+  background:var(--bg);
+  transform:translateY(-100%);
+  transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+}
+.search-overlay.open { transform:translateY(0); }
+.search-bar {
+  display:flex; align-items:center; gap:10px;
+  padding:env(safe-area-inset-top,12px) 16px 10px;
+  background:white; border-bottom:1px solid var(--border);
+}
+.search-input {
+  flex:1; border:none; outline:none; font-size:16px;
+  font-family:inherit; background:transparent; color:var(--text-primary);
+}
+.search-input::placeholder { color:var(--text-muted); }
+.search-cancel {
+  border:none; background:none; color:var(--accent);
+  font-size:15px; font-weight:500; cursor:pointer; font-family:inherit;
+}
+.search-results { padding:12px 16px; overflow-y:auto; height:calc(100vh - 60px); }
+.search-result {
+  display:flex; align-items:center; gap:12px; padding:12px;
+  border-radius:12px; cursor:pointer; transition:background 0.15s;
+}
+.search-result:active { background:var(--surface2); }
+.search-result-dot { width:10px; height:10px; border-radius:5px; flex-shrink:0; }
+.search-result-name { font-size:15px; font-weight:500; }
+.search-result-type { font-size:12px; color:var(--text-muted); }
+
+/* ─── TECHNIQUE STEPS ─── */
+.technique-card { transition:all 0.2s; }
+.technique-card:active { transform:scale(0.98); }
+.technique-steps { }
+.technique-step { display:flex; gap:10px; align-items:flex-start; margin-bottom:8px; }
+.technique-step-num {
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; color:white;
+}
+.technique-step > div { font-size:12px; color:var(--text-secondary); line-height:1.4; }
+
+/* ─── PATH BUILDER ─── */
+.path-overlay {
+  position:fixed; top:0; left:0; right:0; bottom:0; z-index:500;
+  background:var(--bg);
+  transform:translateY(100%);
+  transition:transform 0.4s cubic-bezier(0.32,0.72,0,1);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+.path-overlay.open { transform:translateY(0); }
+.path-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:env(safe-area-inset-top,12px) 16px 12px;
+  background:rgba(255,255,255,0.92);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px);
+}
+.path-close {
+  width:28px; height:28px; border:none; background:var(--surface2);
+  border-radius:8px; cursor:pointer; color:var(--text-secondary);
+  font-size:18px; display:flex; align-items:center; justify-content:center;
+}
+.path-title { font-size:18px; font-weight:700; }
+.path-content {
+  flex:1; overflow-y:auto; padding:16px;
+  -webkit-overflow-scrolling:touch;
+}
+.path-chain {
+  display:flex; gap:8px; overflow-x:auto; margin-bottom:16px; padding-bottom:8px;
+  -webkit-overflow-scrolling:touch;
+}
+.path-chain-item {
+  padding:8px 12px; border-radius:10px; background:white; border:1px solid var(--border);
+  font-size:12px; font-weight:600; white-space:nowrap; flex-shrink:0;
+}
+.path-chain-item.position { background:var(--surface2); }
+.path-chain-item.technique { background:white; }
+.path-options {
+  margin-bottom:16px;
+}
+.path-section-title {
+  font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  color:var(--text-muted); margin-bottom:8px; margin-top:12px;
+}
+.path-step {
+  padding:12px; border-radius:10px; background:white; border:1px solid var(--border);
+  margin-bottom:6px; cursor:pointer; transition:all 0.2s;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.path-step:active { transform:scale(0.97); background:var(--surface2); }
+.path-step-left { flex:1; }
+.path-step-name { font-size:13px; font-weight:600; }
+.path-step-label { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.path-step-arrow { color:var(--accent); font-size:16px; }
+.path-action-btn {
+  width:100%; padding:12px; border-radius:12px; border:none;
+  background:linear-gradient(135deg, var(--accent), #D4652E);
+  color:white; font-size:14px; font-weight:600; cursor:pointer;
+  font-family:inherit; margin-top:16px; transition:all 0.2s;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.fade-in { animation:fadeIn 0.3s ease-out; }
+
+/* ─── JOURNAL MODE ─── */
+.journal-overlay {
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:var(--bg); z-index:100; overflow-y:auto;
+  transform:translateY(100%); transition:transform 0.3s ease;
+}
+.journal-overlay.open { transform:translateY(0); }
+.journal-header {
+  position:sticky; top:0; background:var(--bg); padding:16px 20px;
+  border-bottom:1px solid var(--border); display:flex; align-items:center;
+  justify-content:space-between; z-index:10;
+}
+.journal-header h2 { margin:0; font-size:18px; color:var(--text-primary); }
+.journal-body { padding:16px 20px; padding-bottom:100px; }
+.journal-date-nav {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  margin-bottom:20px;
+}
+.journal-date-nav button {
+  background:none; border:none; font-size:20px; color:var(--text-muted);
+  cursor:pointer; padding:4px 8px;
+}
+.journal-date-nav .date-display {
+  font-size:16px; font-weight:600; color:var(--text-primary);
+  min-width:160px; text-align:center;
+}
+.journal-section {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:16px; margin-bottom:16px;
+}
+.journal-section-title {
+  font-size:13px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.5px; color:var(--text-muted); margin-bottom:12px;
+}
+.journal-field { margin-bottom:12px; }
+.journal-field label {
+  display:block; font-size:12px; color:var(--text-muted);
+  margin-bottom:4px; font-weight:600;
+}
+.journal-field input, .journal-field textarea, .journal-field select {
+  width:100%; padding:10px 12px; border:1px solid var(--border);
+  border-radius:8px; background:var(--bg); color:var(--text-primary);
+  font-size:14px; font-family:Inter,sans-serif; box-sizing:border-box;
+}
+.journal-field textarea { resize:vertical; min-height:60px; }
+.journal-rating { display:flex; gap:4px; margin-top:4px; }
+.journal-rating span {
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  border-radius:8px; border:1px solid var(--border); background:var(--bg);
+  cursor:pointer; font-size:16px; transition:all 0.2s;
+}
+.journal-rating span.active {
+  background:var(--accent); color:white; border-color:var(--accent);
+}
+.round-card {
+  background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  padding:12px; margin-bottom:10px;
+}
+.round-card-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:8px;
+}
+.round-card-header strong { font-size:14px; color:var(--text-primary); }
+.round-remove { color:var(--sub); cursor:pointer; font-size:18px; }
+.sub-tag {
+  display:inline-block; padding:3px 10px; border-radius:12px;
+  font-size:11px; font-weight:600; margin:2px;
+}
+.sub-tag.got { background:#2A8B7A22; color:#2A8B7A; }
+.sub-tag.gave { background:#B5352A22; color:#B5352A; }
+.move-chain-display {
+  display:flex; flex-wrap:wrap; gap:4px; align-items:center;
+  padding:8px 0;
+}
+.move-chain-item {
+  padding:3px 8px; border-radius:8px; font-size:11px; font-weight:600;
+  border:1px solid;
+}
+.chain-arrow { color:var(--text-muted); font-size:10px; }
+.journal-entries-list { margin-top:16px; }
+.journal-entry-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:12px 16px; margin-bottom:8px; cursor:pointer;
+}
+.journal-entry-card .entry-date {
+  font-size:13px; font-weight:600; color:var(--text-primary);
+}
+.journal-entry-card .entry-summary {
+  font-size:12px; color:var(--text-muted); margin-top:4px;
+}
+.goal-item {
+  display:flex; align-items:center; gap:10px; padding:10px;
+  background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  margin-bottom:8px;
+}
+.goal-progress {
+  width:40px; height:40px; border-radius:50%; display:flex;
+  align-items:center; justify-content:center; font-size:12px;
+  font-weight:700; flex-shrink:0;
+}
+.goal-info { flex:1; }
+.goal-info .goal-name { font-size:13px; font-weight:600; color:var(--text-primary); }
+.goal-info .goal-detail { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.goal-hit-btn {
+  padding:6px 14px; border-radius:8px; border:1px solid var(--accent);
+  background:var(--accent)11; color:var(--accent); font-size:12px;
+  font-weight:600; cursor:pointer;
+}
+.goal-hit-btn:active { background:var(--accent); color:white; }
+.add-btn {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:8px 16px; border-radius:8px; border:1px solid var(--accent);
+  background:var(--accent)11; color:var(--accent); font-size:13px;
+  font-weight:600; cursor:pointer; margin-top:8px;
+}
+.opponent-record {
+  display:flex; gap:12px; font-size:12px; color:var(--text-muted); margin-top:4px;
+}
+.tab-bar { display:flex; gap:0; margin-bottom:16px; border-bottom:1px solid var(--border); }
+.tab-btn {
+  flex:1; padding:10px; text-align:center; font-size:13px; font-weight:600;
+  color:var(--text-muted); border:none; background:none; cursor:pointer;
+  border-bottom:2px solid transparent;
+}
+.tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+/* ─── MOVE SELECTOR MODAL ─── */
+.move-selector-modal {
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.4); z-index:110; display:flex;
+  align-items:flex-end; padding:20px;
+}
+.move-selector-content {
+  width:100%; background:var(--surface); border-radius:20px 20px 0 0;
+  padding:20px; max-height:90vh; overflow-y:auto;
+  animation:slideUp 0.3s ease-out;
+}
+@keyframes slideUp {
+  from { transform:translateY(100%); }
+  to { transform:translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">BJJ ATLAS</div>
+    <div class="header-subtitle">Positional Atlas</div>
+  </div>
+  <div class="header-right">
+    <button class="header-btn" onclick="openSearch()" aria-label="Search">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><line x1="12.5" y1="12.5" x2="16" y2="16"/></svg>
+    </button>
+    <button class="header-btn" id="trainBtn" onclick="openTraining()" aria-label="Training">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9h2l2-5 3 10 2-5h2"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--sub)"></div>Sub</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--sweep)"></div>Sweep</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--transition)"></div>Move</div>
+</div>
+
+<!-- CANVAS -->
+<div class="canvas-container" id="canvasContainer">
+  <canvas id="mainCanvas"></canvas>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-item active" onclick="switchView('graph')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><line x1="7" y1="6" x2="17" y2="6"/><line x1="6.5" y1="7.5" x2="11" y2="16.5"/><line x1="17.5" y1="7.5" x2="13" y2="16.5"/></svg>
+    <span class="nav-label">Graph</span>
+  </button>
+  <button class="nav-item" onclick="switchView('positions')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    <span class="nav-label">Positions</span>
+  </button>
+  <button class="nav-item" onclick="switchView('paths')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h3v3H3z"/><path d="M7 7h3v3H7z"/><path d="M11 7h3v3h-3z"/><path d="M3 12h12v2H3z"/></svg>
+    <span class="nav-label">Paths</span>
+  </button>
+  <button class="nav-item" onclick="switchView('journal')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="16" x2="20" y2="16"/></svg>
+    <span class="nav-label">Journal</span>
+  </button>
+  <button class="nav-item" onclick="switchView('me')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0112 0v1"/></svg>
+    <span class="nav-label">Me</span>
+  </button>
+</div>
+
+<!-- FOCUS OVERLAY -->
+<div class="focus-overlay" id="focusOverlay">
+  <div class="focus-header">
+    <button class="focus-back" onclick="closeFocus()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Atlas
+    </button>
+    <div class="focus-title" id="focusTitle">Closed Guard</div>
+    <button class="header-btn" onclick="openDetailFromFocus()" style="font-size:14px;">ℹ️</button>
+  </div>
+  <div class="perspective-toggle">
+    <button class="perspective-btn active" id="topPerspBtn" onclick="setPerspective('top')">Top Player</button>
+    <button class="perspective-btn" id="bottomPerspBtn" onclick="setPerspective('bottom')">Bottom Player</button>
+  </div>
+  <div class="focus-canvas-wrap">
+    <canvas id="focusCanvas" class="focus-canvas"></canvas>
+  </div>
+</div>
+
+<!-- QUICK INFO CARD -->
+<div class="quick-card" id="quickCard"></div>
+
+<!-- DETAIL PANEL -->
+<div class="panel-backdrop" id="panelBackdrop" onclick="closeDetail();closeTechniquePopup()"></div>
+
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-handle"></div>
+  <div class="detail-content" id="detailContent"></div>
+</div>
+
+<!-- TECHNIQUE POPUP -->
+<div class="technique-popup" id="techniquePopup">
+  <div class="detail-handle"></div>
+  <div class="technique-popup-content" id="techniquePopupContent"></div>
+</div>
+
+<!-- TRAINING DRAWER -->
+<div class="training-drawer" id="trainingDrawer">
+  <div class="training-backdrop" onclick="closeTraining()"></div>
+  <div class="training-sheet">
+    <div class="training-header">
+      <div class="training-title">Training Plan</div>
+      <button class="training-close" onclick="closeTraining()">✕</button>
+    </div>
+    <div class="training-body" id="trainingBody"></div>
+  </div>
+</div>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-bar">
+    <svg width="18" height="18" fill="none" stroke="#A89585" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="12.5" y1="12.5" x2="16" y2="16"/></svg>
+    <input class="search-input" id="searchInput" placeholder="Search positions..." oninput="filterSearch()">
+    <button class="search-cancel" onclick="closeSearch()">Cancel</button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<!-- PATH BUILDER OVERLAY -->
+<div class="path-overlay" id="pathOverlay">
+  <div class="path-header">
+    <button class="path-close" onclick="closePaths()">✕</button>
+    <div class="path-title">Training Paths</div>
+    <div style="width:28px"></div>
+  </div>
+  <div class="path-content" id="pathContent"></div>
+</div>
+
+<!-- JOURNAL OVERLAY -->
+<div id="journalOverlay" class="journal-overlay">
+  <div class="journal-header">
+    <span onclick="closeJournal()" style="cursor:pointer;font-size:20px">←</span>
+    <h2>Training Journal</h2>
+    <div style="width:28px"></div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="setJournalTab('entry')">Log</button>
+    <button class="tab-btn" onclick="setJournalTab('history')">History</button>
+    <button class="tab-btn" onclick="setJournalTab('goals')">Goals</button>
+  </div>
+  <div class="journal-body" id="journalBody"></div>
+</div>
+
+<!-- ME OVERLAY -->
+<div id="meOverlay" class="journal-overlay">
+  <div class="journal-header">
+    <span onclick="closeMe()" style="cursor:pointer;font-size:20px">←</span>
+    <h2>Me</h2>
+    <div style="width:28px"></div>
+  </div>
+  <div class="journal-body" id="meBody"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  BJJ POSITIONAL ATLAS — DATA
+// ═══════════════════════════════════════════════
+
+const TYPES = {
+  guard:'#3D7EA6', top:'#A63D3D', back:'#3D7A5A',
+  neutral:'#8B7A3D', leg:'#7A3D6A'
+};
+const EDGE_COLORS = { submission:'#B5352A', sweep:'#2A8B7A', transition:'#C4872A' };
+
+const positions = [
+  // Guard positions (8)
+  {id:'closed_guard',name:'Closed Guard',type:'guard',abbr:'CG',
+   desc:'Full guard with your legs locked around your opponent\'s waist, controlling their posture by pulling them into you. This is the foundational bottom position in BJJ — you\'re on your back but you\'re the one attacking. In competition, being here means your opponent is inside your guard and you\'re hunting for sweeps, submissions, and back takes. Your #1 priority is breaking their posture down and controlling at least one of their arms.',
+   details:['Control opponent posture with overhook/collar grip','Angle hips for attacks','Break posture before attacking'],
+   mistakes:['Lying flat without angles','Releasing guard without purpose','Not controlling posture']},
+  {id:'open_guard',name:'Open Guard',type:'guard',abbr:'OG',
+   desc:'Any guard where your legs aren\'t locked — feet on hips, knees, or biceps with grips managing distance. This is the most dynamic guard family in BJJ with dozens of variations. You\'ll end up here when someone breaks your closed guard open, or when you\'re playing distance against a standing passer. Grip fighting is everything — lose your grips and you\'re getting passed.',
+   details:['Maintain frames with feet and hands','Use sleeve and collar grips','Keep hips active and mobile'],
+   mistakes:['Feet on the floor instead of opponent','No grip fighting','Allowing guard pass pressure']},
+  {id:'half_guard',name:'Half Guard',type:'guard',abbr:'HG',
+   desc:'You\'re on your back or side with one of your opponent\'s legs trapped between both of yours. Half guard used to be considered a bad position, but modern BJJ turned it into an offensive powerhouse. You get here when your full guard gets passed halfway, or you pull into it deliberately. Get on your side with an underhook — if you stay flat, you\'re getting crushed.',
+   details:['Get on your side with underhook','Control the trapped leg','Use knee shield for distance'],
+   mistakes:['Staying flat on back','No underhook battle','Not blocking crossface']},
+  {id:'butterfly_guard',name:'Butterfly Guard',type:'guard',abbr:'BG',
+   desc:'Seated upright with both instep hooks under your opponent\'s thighs, controlling their upper body with collar ties or underhooks. This is one of the highest-percentage sweeping positions in all of grappling. Extremely common in no-gi and MMA. Your power comes from your hooks combined with upper body control — the moment they lean forward, you hook sweep them.',
+   details:['Maintain upright posture','Hooks under thighs','Overhook or underhook control'],
+   mistakes:['Leaning too far back','Hooks too shallow','No upper body control']},
+  {id:'de_la_riva',name:'De La Riva Guard',type:'guard',abbr:'DLR',
+   desc:'Your outside leg hooks behind your opponent\'s lead leg (behind the knee) while you grip their far sleeve and collar. Named after Ricardo De La Riva, this guard completely changed how people play against standing passers. You end up here when someone stands in your open guard. The hook off-balances them backward, and the sleeve grip prevents them from disengaging.',
+   details:['DLR hook deep behind knee','Far sleeve grip essential','Collar grip for control'],
+   mistakes:['Hook not deep enough','No sleeve control','Hips too close to opponent']},
+  {id:'spider_guard',name:'Spider Guard',type:'guard',abbr:'SG',
+   desc:'Both feet placed in your opponent\'s biceps with matching sleeve grips, creating a framework of push-pull control. This is a Gi-specific guard that gives you extraordinary control over your opponent\'s posture and movement. You play spider when someone is trying to pass standing and you want to keep them at range. Your legs are doing most of the work — keep your hips off the mat and stay active.',
+   details:['Push-pull with feet and hands','Lasso variations available','Keep hips off the mat'],
+   mistakes:['Grips on same side','Not using legs actively','Elbows flared']},
+  {id:'lasso_guard',name:'Lasso Guard',type:'guard',abbr:'LG',
+   desc:'Your leg spirals around your opponent\'s arm from the outside, wrapping over the triceps while you maintain the sleeve grip. A Gi-specific guard that creates an extremely tight and frustrating control that\'s hard to strip. Often combined with spider guard on the other side. Once the lasso is deep, your opponent can barely move that arm, opening up sweeps and triangles.',
+   details:['Deep lasso wrap around triceps','Maintain sleeve grip','Use free leg to attack'],
+   mistakes:['Shallow lasso easily stripped','No follow-up attacks','Staying static']},
+  {id:'rubber_guard',name:'Rubber Guard',type:'guard',abbr:'RG',
+   desc:'A high guard system where you pull your own foot behind your opponent\'s head while controlling from closed guard, trapping their posture completely. Created by Eddie Bravo for no-gi, this system requires above-average hip flexibility. You enter it from closed guard by climbing your legs high. When you lock \'mission control\' (foot behind head, hand on shin), your opponent is stuck and you can chain omoplatas and gogoplatas.',
+   details:['Mission control position first','Break posture completely','Chain attacks from system'],
+   mistakes:['Forcing without flexibility','Not securing mission control','Opponent postures up']},
+
+  // Top positions (7)
+  {id:'mount',name:'Mount',type:'top',abbr:'MT',
+   desc:'You\'re sitting on your opponent\'s torso with a knee on each side of their body — the second most dominant position in BJJ after back control. Worth 4 points in competition. From here you have access to collar chokes, armbars, and americana/kimura. Your opponent\'s only real options are to bump you off or turn to their side. Keep your hips heavy, grapevine your legs, and work toward high mount for even more control.',
+   details:['Grapevine legs to control hips','High mount for submissions','Swim hands through frames'],
+   mistakes:['Sitting too upright','Posting too wide','Not transitioning to high mount']},
+  {id:'side_control',name:'Side Control',type:'top',abbr:'SC',
+   desc:'Chest-to-chest control perpendicular to your opponent, with crossface and underhook maintaining the pin. Worth 3 points (for passing to get here) and it\'s where most top-game chains start. You end up here after passing guard. This is a transitional hub — from here you can mount, take the back, go to knee-on-belly, or hunt for kimuras and americanas. Keep heavy chest pressure and block their hip escape.',
+   details:['Crossface and underhook','Chest pressure on sternum','Block hip with knee'],
+   mistakes:['Too much space','No crossface pressure','Weight not distributed']},
+  {id:'knee_on_belly',name:'Knee on Belly',type:'top',abbr:'KOB',
+   desc:'One knee driving into your opponent\'s midsection or solar plexus while your other foot is posted wide for base. Worth 2 points in competition and absolutely miserable for the bottom player. You move here from side control when you want to increase pressure and bait reactions. When they push your knee, you spin for armbars. When they turn away, you take the back.',
+   details:['Knee near solar plexus','Collar grip for balance','Ready to transition'],
+   mistakes:['Knee too low on hips','No grips for balance','Committing weight fully']},
+  {id:'north_south',name:'North-South',type:'top',abbr:'NS',
+   desc:'You\'re chest-on-chest with your opponent but facing opposite directions — your head is at their hips, their head is at yours. A very tight pin that\'s hard to escape once you flatten the bottom player. You get here by switching from side control when they\'re framing hard against you. Great for kimura attacks and the north-south choke. Keep your hips sprawled low and heavy.',
+   details:['Sprawl hips low','Underhook both arms','Heavy chest pressure'],
+   mistakes:['Hips too high','No arm control','Drifting off-center']},
+  {id:'scarf_hold',name:'Scarf Hold',type:'top',abbr:'SH',
+   desc:'Kesa gatame — sitting on your hip beside your opponent with their head trapped under your arm and their near arm controlled. A powerful pin from Judo that generates enormous chest pressure. You reach this from side control or after a throw. Extremely strong for beginners but you need to be aware of the back take — if you lose the head, they\'ll take your back.',
+   details:['Head trapped under arm','Hip pressure into opponent','Base with free hand'],
+   mistakes:['Giving up back','No head control','Opponent bridges over']},
+  {id:'half_guard_top',name:'Half Guard Top',type:'top',abbr:'HGT',
+   desc:'You\'re inside your opponent\'s half guard, with one of your legs trapped between theirs. Your job is to pass and advance to side control or mount. Win the crossface and underhook battle first — whoever gets the underhook usually wins the exchange. Pressure their face away with crossface, flatten them to their back, then work to free your trapped leg.',
+   details:['Establish crossface first','Free trapped leg','Pressure and flatten'],
+   mistakes:['No crossface','Getting swept','Letting opponent get underhook']},
+  {id:'guard_top',name:'Inside Guard (Top)',type:'top',abbr:'IGT',
+   desc:'Kneeling or standing inside your opponent\'s closed guard, working to break it open and pass. This is a neutral-to-slightly-disadvantaged position — you need to respect the submissions (armbar, triangle, choke) while methodically working to open their legs. Posture is survival — if they break you down, they attack. Stand up to open the guard whenever possible.',
+   details:['Posture up with hands on hips','Break guard grip','Stand to open guard'],
+   mistakes:['Broken posture','Hands on mat','No guard break strategy']},
+
+  // Back positions (3)
+  {id:'back_control',name:'Back Control',type:'back',abbr:'BC',
+   desc:'You\'re behind your opponent with your chest on their back, both hooks in (feet hooked inside their thighs), and a seatbelt grip (one arm over, one under). This is the single most dominant position in all of BJJ — worth 4 points and your opponent cannot see or effectively attack you. Your primary attacks are rear naked choke, collar chokes, and armbars. Maintain your hooks and seatbelt at all costs.',
+   details:['Seatbelt grip (over/under)','Both hooks in','Head on choking side'],
+   mistakes:['Crossing feet','Losing seatbelt','No chin strap control']},
+  {id:'turtle_top',name:'Turtle (Top)',type:'back',abbr:'TT',
+   desc:'Your opponent is turtled up (on hands and knees protecting their neck) and you\'re on top or to the side, working to break them down and take the back. You end up here after a failed guard pass or takedown where they turtle instead of giving up side control. Be patient — spiral ride control, break their posture down flat, then work your hooks in for back control.',
+   details:['Spiral ride control','Seat belt from side','Create space for hooks'],
+   mistakes:['Jumping over turtle','No wrist control','Not patient with entries']},
+  {id:'crucifix',name:'Crucifix',type:'back',abbr:'CX',
+   desc:'You\'re behind your opponent controlling both of their arms — one trapped between your legs, the other controlled by your hands — while attacking their exposed neck. One of the most devastating control positions in BJJ. You reach this from turtle top or back control when you can isolate an arm with your legs. Once locked in, they have zero defense against chokes.',
+   details:['One arm trapped with legs','Other arm controlled by hands','Neck exposed for attacks'],
+   mistakes:['Arm not fully trapped','No back hook','Opponent turns in']},
+
+  // Neutral positions (3)
+  {id:'standing',name:'Standing',type:'neutral',abbr:'ST',
+   desc:'Both players on their feet in a grappling stance, fighting for grips and position before the fight goes to the ground. Where every match starts. In Gi, grip fighting on collar and sleeve is critical. In no-gi, underhooks, collar ties, and wrist control dominate. Level changes open up takedowns (single leg, double leg), while pulling guard is the quickest way to get to the ground on your terms.',
+   details:['Collar tie and wrist control','Level change for shots','Grip fighting strategy'],
+   mistakes:['Bent at waist','Arms extended','No grip strategy']},
+  {id:'turtle_bottom',name:'Turtle (Bottom)',type:'neutral',abbr:'TB',
+   desc:'You\'re on all fours, elbows tight to knees, hands protecting your neck — the last line of defense when your guard gets passed. Turtle is defensive but not hopeless. Your options are: sit out to guard, granby roll to reguard, stand up in base, or look for kimura traps. Don\'t stay static or they\'ll take your back. The moment you feel hooks coming in, you need to be moving.',
+   details:['Protect neck with hands','Sit out or granby roll','Stand up in base'],
+   mistakes:['Flat on stomach','No hand protection','Staying static']},
+  {id:'guard_pull',name:'Guard Pull / Seated',type:'neutral',abbr:'GP',
+   desc:'Seated on the mat or in the process of pulling your opponent into your guard from standing, using grips to control the engagement. Extremely common in competition BJJ. You grip collar and sleeve (Gi) or collar tie and wrist (no-gi), sit down, and immediately work to establish your preferred guard. Don\'t just butt-scoot aimlessly — have a plan for which guard you\'re entering.',
+   details:['Establish grips before sitting','Feet active immediately','Transition to preferred guard'],
+   mistakes:['Sitting without grips','No immediate guard establishment','Butt scooting without plan']},
+
+  // Leg entanglements (4)
+  {id:'single_leg_x',name:'Single Leg X',type:'leg',abbr:'SLX',
+   desc:'One of your legs hooks behind your opponent\'s knee (inside hook) while your other foot pushes on their far hip, with their trapped leg controlled against your body. Also called \'single leg X\' or \'ashi garami variant.\' This is a major sweeping and leg-lock entry position. You get here from butterfly, DLR, or open guard entries. Control the heel for leg locks, or elevate and sweep.',
+   details:['Inside hook behind knee','Outside foot on hip','Control ankle or heel'],
+   mistakes:['Hooks not connected','No upper body control','Opponent frees leg']},
+  {id:'x_guard',name:'X-Guard',type:'leg',abbr:'XG',
+   desc:'You\'re underneath your opponent with both legs in an X configuration around one of their legs — one hook behind their knee, one in front of their thigh — while controlling their far ankle. A powerful sweeping position that\'s very hard to pass. You enter from butterfly guard, DLR, or single leg X. The key mechanic is elevation: lift them onto your legs and they lose all base.',
+   details:['Both hooks under thigh','Control far ankle','Elevate and off-balance'],
+   mistakes:['Hooks on same side','Not elevating','No ankle control']},
+  {id:'ashi_garami',name:'Ashi Garami',type:'leg',abbr:'AG',
+   desc:'The standard leg entanglement for heel hook attacks. Your legs are wrapped around one of your opponent\'s legs in a figure-four configuration, with their foot controlled against your chest. \'Inside position\' means your attacking foot is between their legs. This is the foundation of the modern leg lock game that Danaher and Gordon Ryan popularized. Control the knee line and attack the heel.',
+   details:['Control foot to chest','Inside knee line position','Pinch knees together'],
+   mistakes:['Leg too loose','No foot control','Knee line not maintained']},
+  {id:'fifty_fifty',name:'50/50',type:'leg',abbr:'5050',
+   desc:'A symmetrical leg entanglement where both you and your opponent have the same leg-locking position on each other — mirror image. Common in competition when both players are attacking legs simultaneously. Can lead to stalling if neither player is aggressive. Your job is to attack first: whoever controls the foot and starts the heel hook wins. Also used for sweeps in Gi.',
+   details:['Mirror entanglement','Control opponent\'s foot','Attack before they do'],
+   mistakes:['Stalling in position','No grip on foot','Opponent gets first attack']}
+];
+
+const edges = [
+  // From Closed Guard
+  {from:'closed_guard',to:'mount',type:'sweep',label:'Hip Bump Sweep',desc:"Explosive sit-up sweep that works when your opponent postures up in your guard. You use their momentum against them as they lean back.",
+   steps:['Control opponent wrist on sweeping side','Sit up explosively, post on opposite hand','Drive hips into opponent blocking their arm','Follow through to mount position','Establish base and control in mount']},
+  {from:'closed_guard',to:'back_control',type:'transition',label:'Back Take',desc:"Thread your arm under theirs and use your legs to climb to their back. Works best when they posture up and you can break their balance laterally.",
+   steps:['Establish hip control with underhook','Bridge hips up explosively','Roll to back while maintaining grip','Secure seatbelt grip','Position hooks for back control']},
+  {from:'closed_guard',to:'open_guard',type:'transition',label:'Open Guard',desc:"Unlock your feet and transition to open guard. Use this when you want more mobility or need to reset your guard position.",
+   steps:['Release feet from around waist','Place feet on opponent hips or biceps','Establish frames with legs','Control distance with leg positioning']},
+  {from:'closed_guard',to:'guard_top',type:'submission',label:'Armbar',desc:"The highest-percentage submission from closed guard. Pivot your hips, clamp their arm between your thighs, and hyperextend the elbow.",
+   steps:['Control opponent wrist and head','Open guard placing foot on hip','Pivot hips out 90 degrees','Swing far leg over opponent head','Bridge hips and apply pressure']},
+  {from:'closed_guard',to:'guard_top',type:'submission',label:'Triangle',desc:"Trap their head and one arm between your legs, locking a figure-four with your legs around their neck. Cut the angle and squeeze.",
+   steps:['Control opponent with collar and wrist','Open guard and wrap one leg around neck','Position other leg in triangle position','Adjust hips for leverage','Apply pressure by pulling hips down']},
+  {from:'closed_guard',to:'guard_top',type:'submission',label:'Kimura',desc:"Double wrist lock on their arm — grab their wrist, figure-four your grip, and torque the shoulder. Works when they post a hand on the mat.",
+   steps:['Control both of opponent arms','Underhook one arm and grip your hands','Maintain wrist control','Rotate hips to expose the shoulder','Apply pressure by rotating the arm']},
+  {from:'closed_guard',to:'guard_top',type:'submission',label:'Cross Collar Choke',desc:"Feed both hands deep into their collar in an X pattern and pull your elbows apart. Requires breaking their posture completely first.",
+   steps:['Grip opponent collar with deep grip','Control the other side collar','Create double collar grip','Hold and apply pressure','Straighten arms to finish choke']},
+  {from:'closed_guard',to:'guard_top',type:'submission',label:'Guillotine',desc:"Wrap your arm around their neck when they drive their head into your chest. Squeeze the forearm into the side of their neck.",
+   steps:['Control opponent head and posture','Sink guillotine grip under chin','Underhook the arm if possible','Squeeze with arms and shoulders','Apply finishing pressure']},
+  {from:'closed_guard',to:'rubber_guard',type:'transition',label:'Mission Control',desc:"Pull your shin across the back of their neck and grab your own foot. Entry to the rubber guard system — requires hip flexibility.",
+   steps:['Establish arm around opponent head','Place foot behind opponent head','Control arm with rubber guard frame','Use leverage for submissions','Chain attacks from position']},
+
+  // From Open Guard
+  {from:'open_guard',to:'closed_guard',type:'transition',label:'Close Guard',desc:"Lock your ankles behind their back to transition to closed guard. Do this when they get close enough and you want more control.",
+   steps:['Pull opponent in closer','Wrap feet around waist','Lock feet together','Pull opponent to you','Establish closed guard']},
+  {from:'open_guard',to:'de_la_riva',type:'transition',label:'DLR Hook',desc:"Thread your outside leg behind their lead knee to establish De La Riva guard. Use this against a standing opponent.",
+   steps:['Hook behind opponent lead leg','Control far sleeve grip','Create off-balance position','Setup DLR variations']},
+  {from:'open_guard',to:'spider_guard',type:'transition',label:'Spider Grips',desc:"Grab both sleeves and place your feet in their biceps. Gi-specific transition that gives you long-range control.",
+   steps:['Secure both sleeve grips','Place feet in opponent biceps','Create web of control','Setup sweep or submission']},
+  {from:'open_guard',to:'butterfly_guard',type:'transition',label:'Sit Up',desc:"Sit up from open guard and hook your feet under their thighs for butterfly guard. Do this when they pressure forward.",
+   steps:['Bring feet to thighs','Sit up explosively','Establish hooks under thighs','Control with upper body']},
+  {from:'open_guard',to:'single_leg_x',type:'transition',label:'SLX Entry',desc:"Slide under one of their legs and hook behind the knee with your inside foot. Quick entry when they step forward.",
+   steps:['Hook one leg behind knee','Outside foot on hip','Control ankle','Setup sweep or submission']},
+  {from:'open_guard',to:'x_guard',type:'transition',label:'X Entry',desc:"Get both hooks around one of their legs from underneath. Enter when they stand with a narrow base.",
+   steps:['Hook both legs in X position','Control far ankle','Elevate opponent','Setup power sweep']},
+  {from:'open_guard',to:'lasso_guard',type:'transition',label:'Lasso Wrap',desc:"Spiral your leg over and around their arm while holding the sleeve. Creates immediate control of that limb.",
+   steps:['Wrap leg around opponent arm','Control with sleeve grip','Create entanglement','Setup attacks']},
+  {from:'open_guard',to:'guard_top',type:'submission',label:'Triangle',desc:"From open guard, pull one arm in while pushing the other away, then close your legs around their head and arm.",
+   steps:['Control head and arm','Wrap leg around neck','Position far leg','Apply triangle pressure']},
+  {from:'open_guard',to:'mount',type:'sweep',label:'Scissor Sweep',desc:"One knee shield across their body, the other leg sweeps their knee. Time it when they drive into your guard.",
+   steps:['Control opponent arm','Cross legs at ankles','Elevate with legs','Drive hips up','Follow to mount']},
+
+  // From Half Guard
+  {from:'half_guard',to:'closed_guard',type:'transition',label:'Recover Full Guard',desc:"Use knee shield to create space, free your trapped leg, and re-close your guard around them.",
+   steps:['Get feet near hips','Bring feet across opponent body','Wrap both feet together','Lock full guard position']},
+  {from:'half_guard',to:'back_control',type:'transition',label:'Back Take',desc:"Get the underhook, come up to dogfight position, then spin behind them to take the back.",
+   steps:['Establish underhook deep','Rotate around opponent','Secure back control','Lock seatbelt grip']},
+  {from:'half_guard',to:'mount',type:'sweep',label:'Old School Sweep',desc:"Classic underhook sweep — come up on the underhook side and drive through them while blocking their far post.",
+   steps:['Control opponent arm','Underhook far arm','Bridge up explosively','Drive through hip','Follow to mount']},
+  {from:'half_guard',to:'single_leg_x',type:'transition',label:'SLX Entry',desc:"Thread your free leg under their trapped leg to enter single leg X. Works when they stand up in your half guard.",
+   steps:['Hook knee position','Setup inside position','Control angle','Transition to SLX']},
+  {from:'half_guard',to:'butterfly_guard',type:'transition',label:'Butterfly Rehook',desc:"Free your bottom leg and replace it with butterfly hooks under their thighs. Transition to a stronger sweeping position.",
+   steps:['Move to sit-up position','Rehook with insteps','Establish butterfly guard']},
+  {from:'half_guard',to:'half_guard_top',type:'submission',label:'Kimura',desc:"Attack the far arm with a kimura grip. Works great when they post their hand to base — trap the wrist and figure-four.",
+   steps:['Control opponent arm','Underhook and grip','Isolate the shoulder','Apply kimura pressure']},
+  {from:'half_guard',to:'half_guard_top',type:'submission',label:'Loop Choke',desc:"Grab the far collar and loop your arm around their neck as they drive into you. Sneaky choke that catches people off-guard.",
+   steps:['Control collar deep','Setup loop with arm','Create choking pressure','Finish with leverage']},
+  {from:'half_guard',to:'de_la_riva',type:'transition',label:'DLR Transition',desc:"Push them to standing with your knee shield, then insert your DLR hook behind their lead leg.",
+   steps:['Release trapped leg','Hook behind opponent leg','Secure sleeve grip','Establish DLR']},
+
+  // From Butterfly Guard
+  {from:'butterfly_guard',to:'mount',type:'sweep',label:'Hook Sweep',desc:"The signature butterfly guard sweep. Underhook one side, elevate with your hook on the other, and dump them sideways.",
+   steps:['Control opponent posture','Elevate with hooks','Drive hips forward','Finish sweep to mount']},
+  {from:'butterfly_guard',to:'side_control',type:'sweep',label:'Arm Drag Sweep',desc:"Drag their arm across your body, exposing their back, then sweep them over the side they posted.",
+   steps:['Control opponent arm','Drag arm across body','Use momentum to sweep','Transition to side control']},
+  {from:'butterfly_guard',to:'back_control',type:'transition',label:'Arm Drag Back Take',desc:"Same arm drag but instead of sweeping, circle behind them to take the back. High-percentage in no-gi.",
+   steps:['Drag opponent arm','Pivot behind opponent','Secure back control grip']},
+  {from:'butterfly_guard',to:'single_leg_x',type:'transition',label:'SLX Transition',desc:"Drop one hook to the mat and thread the other behind their knee. Smooth transition when they stand up.",
+   steps:['Release hooks','Setup inside leg position','Hook behind knee','Establish SLX']},
+  {from:'butterfly_guard',to:'x_guard',type:'transition',label:'X-Guard Entry',desc:"Get underneath them and thread both legs into X configuration around one leg. Enter when they lean forward.",
+   steps:['Position both hooks','Control far ankle','Setup X-guard position']},
+  {from:'butterfly_guard',to:'half_guard',type:'transition',label:'Half Guard Pull',desc:"Drop to half guard by trapping one of their legs. Use this as a bail-out when butterfly isn't working.",
+   steps:['Release butterfly position','Pull to half guard','Control trapped leg']},
+  {from:'butterfly_guard',to:'guard_top',type:'submission',label:'Guillotine',desc:"Snap their head down into a front headlock and wrap the guillotine. Works when they shoot in or drive forward with bad posture.",
+   steps:['Control head tightly','Sink guillotine grip','Squeeze for finish']},
+  {from:'butterfly_guard',to:'guard_top',type:'submission',label:'Anaconda',desc:"Arm-in choke where you wrap around their head and arm from the front. Set it up when they drive into you with their head down.",
+   steps:['Control arm deeply','Setup anaconda grip','Apply choke pressure']},
+
+  // From De La Riva
+  {from:'de_la_riva',to:'back_control',type:'transition',label:'Berimbolo',desc:"Invert under them, rolling to off-balance them and spin to their back. The signature DLR attack, requires good inversion.",
+   steps:['Establish DLR hook and control','Roll around opponent','Secure back position','Lock in seatbelt']},
+  {from:'de_la_riva',to:'mount',type:'sweep',label:'DLR Sweep',desc:"Use the DLR hook to knock their base out while pulling the far sleeve. They topple backward or sideways.",
+   steps:['Control leg hook deeply','Elevate opponent','Drive hips forward','Finish to mount']},
+  {from:'de_la_riva',to:'single_leg_x',type:'transition',label:'SLX Entry',desc:"Convert the DLR hook into a single leg X position. Smooth transition when they try to step out of your hook.",
+   steps:['Adjust leg position','Setup inside hook','Control angle','Transition to SLX']},
+  {from:'de_la_riva',to:'x_guard',type:'transition',label:'X-Guard Transition',desc:"Get both legs involved and convert to full X-guard under their leg. Do this when they try to back away.",
+   steps:['Position second hook','Create X configuration','Control both angles']},
+  {from:'de_la_riva',to:'open_guard',type:'transition',label:'Reguard',desc:"Pull your hook out and re-establish open guard. Use this to reset when they're shutting down your DLR game.",
+   steps:['Reset to open guard','Release DLR hook','Establish foot placement']},
+  {from:'de_la_riva',to:'guard_top',type:'submission',label:'Triangle',desc:"Pull them down and forward with your grips while shooting your legs up for the triangle. Works when they reach toward you.",
+   steps:['Control arm and head','Setup triangle lock','Apply pressure']},
+
+  // From Spider Guard
+  {from:'spider_guard',to:'mount',type:'sweep',label:'Spider Sweep',desc:"Push-pull with your feet in their biceps — extend one leg while pulling the other to sweep them sideways.",
+   steps:['Use bicep grips to elevate','Create angle with legs','Drive hips through','Finish to mount']},
+  {from:'spider_guard',to:'lasso_guard',type:'transition',label:'Lasso Entry',desc:"Spiral one leg over and around their arm to convert to lasso guard. Adds extra control when spider alone isn't enough.",
+   steps:['Wrap leg over arm','Maintain sleeve grip','Establish lasso position']},
+  {from:'spider_guard',to:'de_la_riva',type:'transition',label:'DLR Transition',desc:"Drop one foot from the bicep and insert it behind their knee for DLR. Switch when they start standing tall.",
+   steps:['Release one grip','Hook behind leg','Transition to DLR']},
+  {from:'spider_guard',to:'open_guard',type:'transition',label:'Reguard',desc:"Release your spider grips and reset to basic open guard. Use this when your grips are getting stripped.",
+   steps:['Release sleeve grips','Establish foot positioning','Reset to open guard']},
+  {from:'spider_guard',to:'guard_top',type:'submission',label:'Triangle',desc:"Pull one arm in with your foot and sleeve grip, kick the other arm away, and close the triangle.",
+   steps:['Control arm and head','Setup triangle lock','Apply finish']},
+  {from:'spider_guard',to:'guard_top',type:'submission',label:'Omoplata',desc:"Swing your leg over their shoulder when they reach in. Rotate your body perpendicular and control their wrist to finish.",
+   steps:['Control arm with leg','Roll underneath','Lock omoplata position','Apply shoulder pressure']},
+
+  // From Lasso Guard
+  {from:'lasso_guard',to:'mount',type:'sweep',label:'Lasso Sweep',desc:"Use the deep lasso wrap to unbalance them and sweep to mount. The lasso controls their arm so they can't post.",
+   steps:['Use lasso control','Create momentum','Drive hips forward','Finish to mount']},
+  {from:'lasso_guard',to:'spider_guard',type:'transition',label:'Spider Transition',desc:"Unwrap the lasso and place your foot in their bicep for spider guard. Use this to change up your attack angles.",
+   steps:['Release lasso wrap','Establish sleeve grips','Transition to spider']},
+  {from:'lasso_guard',to:'guard_top',type:'submission',label:'Omoplata',desc:"The lasso puts their arm in the perfect position for an omoplata. Swing your hips through and flatten them.",
+   steps:['Control arm with lasso','Roll under opponent','Lock shoulder','Apply pressure']},
+  {from:'lasso_guard',to:'guard_top',type:'submission',label:'Triangle',desc:"From lasso, your opponent's posture is broken on one side. Use that to set up triangle by pulling their head down.",
+   steps:['Control head and arm','Setup triangle','Apply choke pressure']},
+
+  // From Rubber Guard
+  {from:'rubber_guard',to:'closed_guard',type:'transition',label:'Return Closed Guard',desc:"Drop your leg from mission control back to standard closed guard. Use this to reset if they're escaping your rubber guard.",
+   steps:['Release foot from behind head','Close legs around waist','Reset guard position']},
+  {from:'rubber_guard',to:'guard_top',type:'submission',label:'Gogoplata',desc:"From mission control, thread your shin across their throat and pull their head down onto it. Rare but devastating choke.",
+   steps:['Control opponent throat','Lock foot behind head','Apply gogoplata choke']},
+  {from:'rubber_guard',to:'guard_top',type:'submission',label:'Omoplata',desc:"Swing your leg from mission control over their shoulder into omoplata position. Natural transition from the rubber guard system.",
+   steps:['Control arm with rubber guard','Roll underneath','Lock shoulder pressure']},
+  {from:'rubber_guard',to:'mount',type:'sweep',label:'Sweep to Mount',desc:"Use the rubber guard clinch to destabilize them and bump sweep to mount. Works when they try to posture up.",
+   steps:['Break opponent posture','Use leg leverage','Sweep to mount position']},
+
+  // From Mount
+  {from:'mount',to:'back_control',type:'transition',label:'Back Take',desc:"When they turn to their side to escape, slide your top hook in and roll them to back control. Let them escape into a worse position.",
+   steps:['Control one arm','Roll off to back','Secure seatbelt grip','Lock hooks']},
+  {from:'mount',to:'side_control',type:'transition',label:'Drop to Side Control',desc:"Step over to side control. Use this to consolidate when mount feels unstable or they're threatening to bump you.",
+   steps:['Drop hips to side','Maintain chest pressure','Transition smoothly']},
+  {from:'mount',to:'knee_on_belly',type:'transition',label:'Slide to KOB',desc:"Pull your knee up to their belly as a transition. Increases pressure and opens up different attack angles.",
+   steps:['Post on one leg','Slide knee to belly','Control collar grip']},
+  {from:'mount',to:'guard_top',type:'submission',label:'Armbar',desc:"Isolate one arm, swing your leg over their head, and fall back for the armbar. The classic mount finish.",
+   steps:['Control one arm','Isolate the shoulder','Step over head','Apply armbar pressure']},
+  {from:'mount',to:'guard_top',type:'submission',label:'Cross Collar Choke',desc:"Feed both hands into their collar in an X pattern. Works best from high mount where they can't bridge.",
+   steps:['Control both collars','Hold deep grips','Apply choking pressure']},
+  {from:'mount',to:'guard_top',type:'submission',label:'Ezekiel Choke',desc:"Thread your hand inside your own sleeve and wrap around their neck. A sneaky choke that works in the gi from mount.",
+   steps:['Control collar with hand','Use gi to create choke','Apply pressure down']},
+  {from:'mount',to:'guard_top',type:'submission',label:'Americana',desc:"Isolate their arm on the mat, figure-four grip it, and push the wrist toward their hip while lifting the elbow. Works when they're flat on their back.",
+   steps:['Control arm and head','Setup triangle lock','Apply finishing pressure']},
+
+  // From Side Control
+  {from:'side_control',to:'mount',type:'transition',label:'Mount Transition',desc:"Slide your knee across their belly to full mount. Time it when they're flat and not framing against you.",
+   steps:['Post one leg up','Shift weight forward','Slide to mount position']},
+  {from:'side_control',to:'knee_on_belly',type:'transition',label:'Knee on Belly',desc:"Pop up to knee on belly. Use this to increase pressure and force reactions you can capitalize on.",
+   steps:['Slide knee up to belly','Establish balance','Control collar grip']},
+  {from:'side_control',to:'north_south',type:'transition',label:'North-South',desc:"Walk your body around toward their head into north-south position. Use this when they're framing hard against side control.",
+   steps:['Rotate around head','Position chest on chest','Control both arms']},
+  {from:'side_control',to:'scarf_hold',type:'transition',label:'Kesa Gatame',desc:"Walk your body around toward their head into north-south position. Use this when they're framing hard against side control.",
+   steps:['Rotate around shoulder','Trap head and arm','Apply pressure']},
+  {from:'side_control',to:'back_control',type:'transition',label:'Back Take',desc:"When they turn toward you to escape, slip your hooks in and take the back. A gift escape.",
+   steps:['Spin around hips','Secure back position','Lock seatbelt']},
+  {from:'side_control',to:'guard_top',type:'submission',label:'Kimura',desc:"Isolate their far arm, figure-four grip, and pry it away from their body. Bread-and-butter side control submission.",
+   steps:['Underhook the arm','Control wrist','Rotate for shoulder lock','Finish pressure']},
+  {from:'side_control',to:'guard_top',type:'submission',label:'Americana',desc:"Pin their near arm to the mat and figure-four grip it. Push wrist to floor while lifting elbow — shoulder lock.",
+   steps:['Control arm near body','Bend arm upward','Lock americana grip','Apply pressure']},
+  {from:'side_control',to:'guard_top',type:'submission',label:'Baseball Bat Choke',desc:"Slide both hands into their collar in a baseball grip and spin to north-south. The rotation cinches the choke.",
+   steps:['Control collar grips','Setup choke position','Pressure across throat']},
+  {from:'side_control',to:'guard_top',type:'submission',label:'Bread Cutter Choke',desc:"Feed your top hand deep into their far collar and drive your forearm across their neck. Gi-specific collar choke.",
+   steps:['Control collar grips','Setup choke position','Pressure across throat']},
+
+  // From Knee on Belly
+  {from:'knee_on_belly',to:'mount',type:'transition',label:'Mount from KOB',desc:"Step over to full mount. Do this when they stop reacting to the knee pressure.",
+   steps:['Post leg down','Shift to mount position','Establish base']},
+  {from:'knee_on_belly',to:'side_control',type:'transition',label:'Side Control Return',desc:"Drop back to side control. Use this to re-consolidate when they're creating too much space.",
+   steps:['Step knee down','Reset side control position']},
+  {from:'knee_on_belly',to:'back_control',type:'transition',label:'Back Take from KOB',desc:"When they turn away from the knee, insert your hooks and take the back.",
+   steps:['Spin behind opponent','Secure back control','Lock hooks']},
+  {from:'knee_on_belly',to:'guard_top',type:'submission',label:'Baseball Bat Choke',desc:"Set the grip in their collar and drop from knee on belly — the spin tightens the choke automatically.",
+   steps:['Control one collar deeply','Grip other side','Apply choke pressure']},
+  {from:'knee_on_belly',to:'guard_top',type:'submission',label:'Armbar from KOB',desc:"When they push your knee, grab the arm and spin for the armbar. Their own reaction creates the opening.",
+   steps:['Control arm','Step over head','Apply armbar pressure']},
+  {from:'knee_on_belly',to:'guard_top',type:'submission',label:'Far Side Armbar',desc:"Reach over and isolate their far arm, then spin for an armbar from the far side. Unexpected angle.",
+   steps:['Isolate far side arm','Position for armbar','Apply finishing pressure']},
+
+  // From North-South
+  {from:'north_south',to:'side_control',type:'transition',label:'Side Control Return',desc:"Walk back to side control. Use this to change positions when they're defending your attacks.",
+   steps:['Rotate off opponent chest','Reset side control position']},
+  {from:'north_south',to:'mount',type:'transition',label:'Mount Transition',desc:"The description for mount transition from north-south.",
+   steps:['Spin around hips','Establish mount position']},
+  {from:'north_south',to:'guard_top',type:'submission',label:'North-South Choke',desc:"Thread your arm under their neck, sprawl your hips, and squeeze. Marcelo Garcia's signature move.",
+   steps:['Control collar deeply','Apply choke pressure from north-south']},
+  {from:'north_south',to:'guard_top',type:'submission',label:'Kimura',desc:"Their arms are exposed in north-south — isolate one and lock the kimura grip. Strong finish from here.",
+   steps:['Underhook arm','Control wrist','Lock kimura position']},
+  {from:'north_south',to:'guard_top',type:'submission',label:'Paper Cutter Choke',desc:"Feed your hand into their collar and drive your forearm across their throat. Works well with your body weight.",
+   steps:['Control collar deeply','Apply choke pressure from north-south']},
+
+  // From Scarf Hold
+  {from:'scarf_hold',to:'side_control',type:'transition',label:'Mount from Scarf',desc:"Swing your leg over to mount. Watch for them trying to take your back during the transition.",
+   steps:['Release head control','Reset to side control']},
+  {from:'scarf_hold',to:'mount',type:'transition',label:'Armbar from Scarf',desc:"Isolate the trapped arm and extend it for an armbar. The head control keeps them pinned while you attack.",
+   steps:['Step leg over head','Establish mount base']},
+  {from:'scarf_hold',to:'guard_top',type:'submission',label:'Americana from Scarf',desc:"Use your head-side arm to control their wrist and americana the trapped arm. Strong Judo-style finish.",
+   steps:['Control collar and head','Apply choke pressure','Finish with leverage']},
+  {from:'scarf_hold',to:'guard_top',type:'submission',label:'Head & Arm Choke',desc:"Control their head and trapped arm, applying pressure with your body weight. Classic scarf hold finish.",
+   steps:['Control trapped arm','Bend upward','Apply americana pressure']},
+
+  // From Half Guard Top
+  {from:'half_guard_top',to:'side_control',type:'transition',label:'Pass to Side Control',desc:"Free your trapped leg by pressuring through crossface and underhook, then clear to side control.",
+   steps:['Free trapped leg','Move to side control position']},
+  {from:'half_guard_top',to:'mount',type:'transition',label:'Pass to Mount',desc:"Instead of going to side, step over directly to mount. Works when they're very flat.",
+   steps:['Post legs up','Shift to mount position']},
+  {from:'half_guard_top',to:'back_control',type:'transition',label:'Back Step',desc:"Step your free leg over their body to enter a leg entanglement or pass to the other side.",
+   steps:['Spin around opponent','Secure back control','Lock seatbelt']},
+  {from:'half_guard_top',to:'guard_top',type:'submission',label:'Kimura',desc:"Attack their underhook arm with a kimura. Works especially well when they're reaching for the underhook.",
+   steps:['Control neck with arm','Create d\'arce grip','Apply choke pressure']},
+  {from:'half_guard_top',to:'guard_top',type:'submission',label:'Ezekiel Choke',desc:"Thread your hand through your sleeve around their neck from inside half guard. Sneaky and hard to see coming.",
+   steps:['Underhook far arm','Control wrist','Lock shoulder position','Finish pressure']},
+
+  // From Inside Guard Top
+  {from:'guard_top',to:'half_guard_top',type:'transition',label:'Half Guard Pass',desc:"Stand up inside their guard to break it open. The highest-percentage guard break against closed guard.",
+   steps:['Base out one foot','Control one leg','Establish half guard top']},
+  {from:'guard_top',to:'side_control',type:'transition',label:'Knee Slice Pass',desc:"Slice your knee through the middle of their guard and drive to side control. Fast and effective.",
+   steps:['Base out both legs','Move to side control','Establish pressure']},
+  {from:'guard_top',to:'standing',type:'transition',label:'Guard Break',desc:"Stand up inside their guard to break it open. The highest-percentage guard break against closed guard.",
+   steps:['Post hands on mat','Stand up with base','Defend guard opening']},
+  {from:'guard_top',to:'side_control',type:'transition',label:'Double Under Pass',desc:"Scoop both legs onto your shoulders and stack them. Powerful passing method against open guard.",
+   steps:['Base out both legs','Move to side control','Establish pressure']},
+  {from:'guard_top',to:'side_control',type:'transition',label:'Toreando Pass',desc:"Grab both pants/ankles and bull-fight pass to the side. Best against open guard when they can't get grips.",
+   steps:['Base out both legs','Move to side control','Establish pressure']},
+  {from:'guard_top',to:'side_control',type:'transition',label:'Stack Pass',desc:"Drive their legs over their head and pass around. Works when you have double unders or they're playing spider.",
+   steps:['Base out both legs','Move to side control','Establish pressure']},
+  {from:'guard_top',to:'side_control',type:'transition',label:'Can Opener',desc:"Clasp your hands behind their head and drive their chin to their chest to force the guard open. Use carefully — can be cranky.",
+   steps:['Base out both legs','Move to side control','Establish pressure']},
+
+  // From Back Control
+  {from:'back_control',to:'mount',type:'transition',label:'Mount Transition',desc:"Release your hooks and roll them to mount. Do this when they're escaping your back and you can catch mount instead.",
+   steps:['Post legs down','Roll to mount position','Establish base']},
+  {from:'back_control',to:'guard_top',type:'submission',label:'Rear Naked Choke',desc:"The king of submissions. Slide your choking arm under their chin, lock the figure-four behind their head, and squeeze.",
+   steps:['Hook one arm','Clasp hands at jaw','Squeeze shoulder and arms','Finish choke']},
+  {from:'back_control',to:'guard_top',type:'submission',label:'Collar Choke from Back',desc:"Feed your hand into their collar and pull across their neck. Gi-specific choke from the most dominant position.",
+   steps:['Control opponent collar','Setup bow and arrow grip','Apply choke with leg']},
+  {from:'back_control',to:'guard_top',type:'submission',label:'Armbar from Back',desc:"Trap one arm, shift your hips, and extend the arm over your thigh for the finish. Works when they're defending the choke.",
+   steps:['Control one arm','Roll into armbar position','Apply pressure to shoulder']},
+  {from:'back_control',to:'crucifix',type:'transition',label:'Crucifix Entry',desc:"Release your hooks and trap both arms. Opens up the crucifix position.",
+   steps:['Release hooks','Trap both arms','Establish crucifix position']},
+
+  // From Turtle Top
+  {from:'turtle_top',to:'back_control',type:'transition',label:'Seat Belt to Back',desc:"Lock a seatbelt grip and work your hooks in. The primary goal from turtle top is always back control.",
+   steps:['Control opponent waist','Secure hooks in','Lock seatbelt grip']},
+  {from:'turtle_top',to:'side_control',type:'transition',label:'Clock Choke',desc:"Walk around their head while gripping the collar, tightening a rotational choke. Gi-specific and devastating.",
+   steps:['Roll opponent over','Control side position']},
+  {from:'turtle_top',to:'crucifix',type:'transition',label:'Crucifix Entry',desc:"Trap one arm between your legs and control the other with your hands. Opens up the crucifix position.",
+   steps:['Trap both arms','Control from crucifix']},
+  {from:'turtle_top',to:'guard_top',type:'submission',label:'Snap Down',desc:"Pull them flat to the mat by snapping their head and shoulder down. Breaks the turtle and gives you top position.",
+   steps:['Control collar','Create clock choke grip','Apply pressure while rotating']},
+
+  // From Crucifix
+  {from:'crucifix',to:'guard_top',type:'submission',label:'Rear Naked Choke',desc:"With both arms trapped, their neck is completely exposed. Slide the choke in — they literally cannot defend.",
+   steps:['Secure hooks','Establish seatbelt grip']},
+  {from:'crucifix',to:'guard_top',type:'submission',label:'Armbar from Crucifix',desc:"Extend the arm that's trapped between your legs. A free armbar with no defense available.",
+   steps:['Control trapped arm','Setup armbar position','Apply pressure']},
+
+  // From Standing
+  {from:'standing',to:'closed_guard',type:'transition',label:'Pull Guard',desc:"Grip up and sit to your preferred guard. Bypasses the standup battle entirely — very common in competition BJJ.",
+   steps:['Jump and pull','Wrap legs around waist','Lock closed guard']},
+  {from:'standing',to:'guard_top',type:'sweep',label:'Single Leg',desc:"Shoot for one of their legs, driving your head into their hip. Classic wrestling takedown that scores 2 points.",
+   steps:['Set up take down','Control opponent','Land in side control']},
+  {from:'standing',to:'guard_top',type:'sweep',label:'Double Leg',desc:"Level change and shoot for both legs, driving through them. High-energy takedown, use when they're upright.",
+   steps:['Execute takedown','Land in guard top position']},
+  {from:'standing',to:'turtle_top',type:'sweep',label:'Snap Down to Front Headlock',desc:"Snap their head down and wrap a front headlock. Sets up guillotines, anacondas, and go-behinds.",
+   steps:['Snap opponent down','Position on back','Control turtle position']},
+  {from:'standing',to:'back_control',type:'transition',label:'Arm Drag to Back',desc:"Drag their arm across and circle behind them. Works in gi and no-gi, sets up the back take.",
+   steps:['Attack single leg','Control opponent','Establish half guard top']},
+  {from:'standing',to:'guard_pull',type:'transition',label:'Collar Drag',desc:"Use your collar grip to drag them down and off-balance as you sit. Can lead directly to a sweep or back take.",
+   steps:['Sink guillotine grip','Control arm','Apply standing choke']},
+  {from:'standing',to:'ashi_garami',type:'transition',label:'Imanari Roll',desc:"The Imanari Roll is an advanced entry — sprawl into the takedown attempt and roll for leg lock control.",
+   steps:['Sprawl forward','Grab leg','Roll to ashi garami']},
+
+  // From Turtle Bottom
+  {from:'turtle_bottom',to:'half_guard',type:'transition',label:'Sit to Half Guard',desc:"Sit through and catch their leg to establish half guard. Gets you from defensive turtle to an offensive guard.",
+   steps:['Sit out','Control one leg','Establish half guard']},
+  {from:'turtle_bottom',to:'standing',type:'transition',label:'Sit Out to Guard',desc:"Sit out, turn, and face them to re-establish some form of guard. Classic wrestling escape adapted for BJJ.",
+   steps:['Stand up with base','Create space from top player']},
+  {from:'turtle_bottom',to:'closed_guard',type:'transition',label:'Granby Roll',desc:"Forward roll using your shoulder to spin and reguard. Flashy but effective when timed right.",
+   steps:['Sit and pull opponent','Lock closed guard']},
+  {from:'turtle_bottom',to:'standing',type:'transition',label:'Stand Up in Base',desc:"Post, stand up, and face them. The simplest escape — just get back to your feet.",
+   steps:['Hook leg position','Setup SLX from turtle']},
+
+  // From Guard Pull / Seated
+  {from:'guard_pull',to:'closed_guard',type:'transition',label:'Closed Guard Entry',desc:"Pull them into your closed guard. Lock your feet immediately after sitting.",
+   steps:['Place feet on hips','Create frames','Establish open guard']},
+  {from:'guard_pull',to:'de_la_riva',type:'transition',label:'DLR Entry',desc:"Sit and immediately hook their lead leg for De La Riva guard. Fast transition against a standing opponent.",
+   steps:['Pull close to opponent','Wrap feet around waist','Lock guard']},
+  {from:'guard_pull',to:'open_guard',type:'transition',label:'Collar Drag',desc:"Use your collar grip to drag them down and off-balance as you sit. Can lead directly to a sweep or back take.",
+   steps:['Sit up position','Place instep hooks','Establish butterfly']},
+  {from:'guard_pull',to:'single_leg_x',type:'transition',label:'SLX Entry',desc:"Hook one leg and control the angle as you sit. Good transition when they step forward.",
+   steps:['Hook one leg','Control angle','Establish SLX']},
+  {from:'guard_pull',to:'butterfly_guard',type:'transition',label:'Butterfly Entry',desc:"Sit up and place butterfly hooks. Bridge and sweep from here when they lean forward.",
+   steps:['Hook behind leg','Secure sleeve grip','Establish DLR']},
+
+  // From SLX
+  {from:'single_leg_x',to:'x_guard',type:'transition',label:'X-Guard Entry',desc:"Thread your other leg in to convert to full X-guard. More sweeping power with both hooks engaged.",
+   steps:['Add second hook','Create X configuration','Establish full X']},
+  {from:'single_leg_x',to:'mount',type:'sweep',label:'Sweep to Top',desc:"Elevate their leg and knock their other foot to dump them. You come up on top.",
+   steps:['Control both angles','Elevate opponent','Drive to mount']},
+  {from:'single_leg_x',to:'ashi_garami',type:'transition',label:'Ashi Entry',desc:"Come up on the single leg and circle to their back as they scramble. Works when they try to pull their leg out.",
+   steps:['Adjust leg position','Setup ashi garami grip','Transition positions']},
+  {from:'single_leg_x',to:'guard_top',type:'submission',label:'Heel Hook from SLX',desc:"Control their foot and attack the heel hook. The primary leg lock from this position.",
+   steps:['Control foot inside','Setup heel hook grip','Apply rotating pressure']},
+  {from:'single_leg_x',to:'back_control',type:'transition',label:'Back Take from SLX',desc:"Come up on the single leg and circle to their back as they scramble. Works when they try to pull their leg out.",
+   steps:['Release leg entanglement','Establish open guard']},
+
+  // From X-Guard
+  {from:'x_guard',to:'mount',type:'sweep',label:'Technical Standup Sweep',desc:"Elevate them on your legs and stand up underneath. They fall and you come up on top.",
+   steps:['Elevate with both hooks','Create momentum','Finish to mount']},
+  {from:'x_guard',to:'mount',type:'sweep',label:'Overhead Sweep',desc:"Extend your legs and throw them over your head. Works when they lean forward too much.",
+   steps:['Elevate with both hooks','Create momentum','Finish to mount']},
+  {from:'x_guard',to:'guard_top',type:'sweep',label:'Single Leg Finish',desc:"Come up on a single leg from X-guard and finish the takedown. Strong when they resist the sweep.",
+   steps:['Adjust hook position','Transition to single leg X']},
+  {from:'x_guard',to:'back_control',type:'transition',label:'Back Take',desc:"Off-balance them and circle behind as they scramble. X-guard to back take is a chain Marcelo Garcia pioneered.",
+   steps:['Rotate around hips','Secure back control']},
+
+  // From Ashi Garami
+  {from:'ashi_garami',to:'guard_top',type:'submission',label:'Straight Ankle Lock',desc:"Control the foot and apply a straight ankle lock by arching your hips into their Achilles tendon. Legal at all belt levels.",
+   steps:['Mirror leg position','Create 50/50 entanglement']},
+  {from:'ashi_garami',to:'guard_top',type:'submission',label:'Heel Hook',desc:"Control the foot, cup the heel, and rotate against the knee. The most powerful leg lock — handle with care.",
+   steps:['Adjust leg angle','Transition to inside position']},
+  {from:'ashi_garami',to:'fifty_fifty',type:'transition',label:'Transition to 50/50',desc:"Rotate into 50/50 to change the leg entanglement. Use this to chase a better angle on their heel.",
+   steps:['Control foot to chest','Apply ankle lock','Pressure for finish']},
+  {from:'ashi_garami',to:'guard_top',type:'sweep',label:'Sweep from Ashi',desc:"Use the leg control to sweep them and come up on top. Good option when leg locks aren't available.",
+   steps:['Setup inside heel hook','Rotate for pressure','Apply finishing move']},
+
+  // From 50/50
+  {from:'fifty_fifty',to:'guard_top',type:'submission',label:'Heel Hook from 5050',desc:"Both of you have the same position — whoever attacks the heel first wins. Secure the foot and rotate.",
+   steps:['Adjust to inside position','Establish ashi garami']},
+  {from:'fifty_fifty',to:'guard_top',type:'sweep',label:'Sweep from 5050',desc:"Use the mirror entanglement to off-balance them and come up on top. Essential when heel hooks aren't allowed.",
+   steps:['Use entanglement','Stand up with sweep']},
+  {from:'fifty_fifty',to:'open_guard',type:'transition',label:'Back Step Out',desc:"Disentangle your legs and back out to reset. Use this when you're losing the grip fight on their foot.",
+   steps:['Get heel hook grip','Apply rotating pressure','Finish submission']},
+  {from:'fifty_fifty',to:'guard_top',type:'submission',label:'Calf Slicer',desc:"Fold their leg and drive your shin into their calf. A compression lock that forces a tap or creates an opening to pass.",
+   steps:['Control toes','Apply toe hold grip','Finish pressure']}
+];
+
+// ═══════════════════════════════════════════════
+//  GRAPH LAYOUT & PHYSICS
+// ═══════════════════════════════════════════════
+
+const W = window.innerWidth, H = window.innerHeight;
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d');
+const dpr = window.devicePixelRatio || 1;
+canvas.width = W * dpr; canvas.height = H * dpr;
+canvas.style.width = W+'px'; canvas.style.height = H+'px';
+ctx.scale(dpr,dpr);
+
+// Assign initial positions in a structured layout
+const layoutGroups = {
+  guard: {cx:W*0.2, cy:H*0.25, r:140},
+  top: {cx:W*0.75, cy:H*0.2, r:130},
+  back: {cx:W*0.8, cy:H*0.6, r:90},
+  neutral: {cx:W*0.15, cy:H*0.65, r:80},
+  leg: {cx:W*0.5, cy:H*0.82, r:110}
+};
+
+positions.forEach((p,i) => {
+  const group = layoutGroups[p.type];
+  const siblings = positions.filter(pp=>pp.type===p.type);
+  const idx = siblings.indexOf(p);
+  const angle = (idx / siblings.length) * Math.PI * 2 - Math.PI/2;
+  p.x = group.cx + Math.cos(angle) * group.r;
+  p.y = group.cy + Math.sin(angle) * group.r;
+  p.vx = 0; p.vy = 0;
+  p.radius = 30;
+  p.targetX = p.x; p.targetY = p.y;
+});
+
+// Force-directed simulation
+function simulate() {
+  const alpha = 0.15;
+  positions.forEach(p => {
+    // Repulsion
+    positions.forEach(q => {
+      if(p===q) return;
+      let dx=p.x-q.x, dy=p.y-q.y;
+      let d=Math.sqrt(dx*dx+dy*dy)||1;
+      let minD=120;
+      if(d<minD){
+        let f=(minD-d)/d*3;
+        p.vx+=dx*f*alpha; p.vy+=dy*f*alpha;
+      }
+    });
+    // Edge attraction
+    edges.forEach(e => {
+      const a=positions.find(pp=>pp.id===e.from);
+      const b=positions.find(pp=>pp.id===e.to);
+      if(!a||!b) return;
+      if(p!==a&&p!==b) return;
+      const other=p===a?b:a;
+      let dx=other.x-p.x, dy=other.y-p.y;
+      let d=Math.sqrt(dx*dx+dy*dy)||1;
+      let ideal=200;
+      let f=(d-ideal)/d*0.002;
+      p.vx+=dx*f; p.vy+=dy*f;
+    });
+    // Center gravity
+    p.vx+=(W/2-p.x)*0.0001;
+    p.vy+=(H*0.45-p.y)*0.0001;
+    // Damping
+    p.vx*=0.85; p.vy*=0.85;
+    p.x+=p.vx; p.y+=p.vy;
+    // Bounds
+    p.x=Math.max(30,Math.min(W-30,p.x));
+    p.y=Math.max(90,Math.min(H-80,p.y));
+  });
+}
+for(let i=0;i<120;i++) simulate();
+
+// ═══════════════════════════════════════════════
+//  PAN & ZOOM STATE
+// ═══════════════════════════════════════════════
+let panX=0, panY=-40, zoom=0.85;
+let isPanning=false, lastTouchX=0, lastTouchY=0;
+let pinchDist=0, startZoom=1;
+let selectedNode=null;
+let tappedNode=null;
+
+function screenToWorld(sx,sy){
+  return {x:(sx-panX)/zoom, y:(sy-panY)/zoom};
+}
+
+// ═══════════════════════════════════════════════
+//  DRAWING
+// ═══════════════════════════════════════════════
+function drawGraph(){
+  ctx.clearRect(0,0,W,H);
+  mainGraphEdgeLabels = [];
+  ctx.save();
+  ctx.translate(panX,panY);
+  ctx.scale(zoom,zoom);
+
+  // Pre-calculate edge groups for label offset
+  const edgeGroups = {};
+  edges.forEach(e => {
+    const key = e.from < e.to ? e.from+'_'+e.to : e.to+'_'+e.from;
+    if(!edgeGroups[key]) edgeGroups[key] = [];
+    edgeGroups[key].push(e);
+  });
+
+  // Build active path lookup sets
+  const apNodes = new Set();
+  const apEdges = new Set();
+  if(activePath){
+    activePath.chain.forEach((item,i)=>{
+      if(i%2===0 && item.id) apNodes.add(item.id);
+      if(i%2===1 && item.name){
+        // Find matching edge
+        const fromPos = activePath.chain[i-1];
+        const toPos = activePath.chain[i+1];
+        if(fromPos && toPos){
+          const matchEdge = edges.find(e=>e.from===fromPos.id && e.to===toPos.id && e.label===item.name);
+          if(matchEdge) apEdges.add(matchEdge);
+        }
+      }
+    });
+  }
+
+  // Draw edges
+  edges.forEach(e => {
+    const a=positions.find(p=>p.id===e.from);
+    const b=positions.find(p=>p.id===e.to);
+    if(!a||!b) return;
+    ctx.beginPath();
+    const color = EDGE_COLORS[e.type]||'#C4872A';
+    const isHighlighted = activePath && apEdges.has(e);
+    const isTappedEdge = tappedNode && (e.from===tappedNode.id || e.to===tappedNode.id);
+    const isDimmed = (activePath && !isHighlighted) || (tappedNode && !isTappedEdge && !activePath);
+    ctx.strokeStyle = isDimmed ? '#E8E0D4' : (isHighlighted ? color : (isTappedEdge ? color+'88' : color+'22'));
+    ctx.lineWidth = isHighlighted ? 3 : (isTappedEdge ? 1.5 : 0.7);
+    // Curved edges
+    const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+    const dx=b.x-a.x, dy=b.y-a.y;
+    const edgeDist = Math.sqrt(dx*dx+dy*dy)||1;
+
+    // Calculate group offset for curve bulge
+    const key = e.from < e.to ? e.from+'_'+e.to : e.to+'_'+e.from;
+    const group = edgeGroups[key];
+    const groupIdx = group.indexOf(e);
+    const groupTotal = group.length;
+    const curveOffset = 0.08 + groupIdx * 0.06;
+
+    const cx=mx+dy/edgeDist*edgeDist*curveOffset, cy=my-dx/edgeDist*edgeDist*curveOffset;
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y);
+    ctx.quadraticCurveTo(cx,cy,b.x,b.y);
+    ctx.stroke();
+    // Arrowhead — only show when path is active
+    if(isHighlighted){
+      const t=0.8;
+      const px=(1-t)*(1-t)*a.x+2*(1-t)*t*cx+t*t*b.x;
+      const py=(1-t)*(1-t)*a.y+2*(1-t)*t*cy+t*t*b.y;
+      const angle=Math.atan2(b.y-py,b.x-px);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(b.x-Math.cos(angle-0.3)*10,b.y-Math.sin(angle-0.3)*10);
+      ctx.lineTo(b.x,b.y);
+      ctx.lineTo(b.x-Math.cos(angle+0.3)*10,b.y-Math.sin(angle+0.3)*10);
+      ctx.fill();
+    }
+
+    // Only show edge labels when a path is active and this edge is highlighted
+    if(isHighlighted) {
+      const baseT = 0.5;
+      const labelX_base=(1-baseT)*(1-baseT)*a.x+2*(1-baseT)*baseT*cx+baseT*baseT*b.x;
+      const labelY_base=(1-baseT)*(1-baseT)*a.y+2*(1-baseT)*baseT*cy+baseT*baseT*b.y;
+      const perpX = -dy/edgeDist;
+      const perpY = dx/edgeDist;
+      const offsetSpacing = 12;
+      const offsetAmount = (groupIdx - (groupTotal-1)/2) * offsetSpacing;
+      const finalLabelX = labelX_base + perpX * offsetAmount;
+      const finalLabelY = labelY_base + perpY * offsetAmount;
+      ctx.fillStyle=color;
+      ctx.font='bold 10px Inter,sans-serif';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(e.label,finalLabelX,finalLabelY);
+      mainGraphEdgeLabels.push({ x:finalLabelX, y:finalLabelY, edge:e, width:ctx.measureText(e.label).width });
+    }
+  });
+
+  // Draw nodes
+  positions.forEach(p => {
+    const color = TYPES[p.type];
+
+    // Check if this node should be dimmed
+    let isDimmed = false;
+    let isSelected = tappedNode && p.id === tappedNode.id;
+    let apNodes = [];
+    if(activePath){
+      apNodes = activePath.chain.filter((item,i) => i%2===0 && item.id);
+      isDimmed = !apNodes.some(n => n.id === p.id);
+    } else if(tappedNode){
+      const connectedIds = new Set();
+      connectedIds.add(tappedNode.id);
+      edges.filter(e=>e.from===tappedNode.id||e.to===tappedNode.id).forEach(e=>{
+        connectedIds.add(e.from);
+        connectedIds.add(e.to);
+      });
+      isDimmed = !connectedIds.has(p.id);
+    }
+
+    const finalColor = isDimmed ? '#DDD5C8' : color;
+    const radius = isDimmed ? p.radius * 0.9 : p.radius;
+
+    // Shadow
+    ctx.save();
+    ctx.shadowColor='rgba(44,24,16,0.12)';
+    ctx.shadowBlur=12;
+    ctx.shadowOffsetY=3;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,radius,0,Math.PI*2);
+    ctx.fillStyle='#FFFFFF';
+    ctx.fill();
+    ctx.restore();
+    // Border
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,radius,0,Math.PI*2);
+    ctx.strokeStyle=finalColor;
+    ctx.lineWidth=isDimmed ? 1.5 : 2.5;
+    ctx.stroke();
+    // Selection ring for tapped node
+    if(isSelected){
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,radius+5,0,Math.PI*2);
+      ctx.strokeStyle=color+'66';
+      ctx.lineWidth=2;
+      ctx.setLineDash([4,3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    // Gradient fill
+    const grad=ctx.createRadialGradient(p.x-4,p.y-4,0,p.x,p.y,radius);
+    if(isDimmed){
+      grad.addColorStop(0,'#CCC5B808');
+      grad.addColorStop(1,'#CCC5B804');
+    } else {
+      grad.addColorStop(0,color+'15');
+      grad.addColorStop(1,color+'08');
+    }
+    ctx.fillStyle=grad;
+    ctx.fill();
+    // Abbreviation centered
+    ctx.fillStyle=isDimmed ? '#CCC5B8' : color;
+    ctx.font=(isDimmed ? '500' : 'bold')+' 11px Inter,sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(p.abbr,p.x,p.y);
+    // Name below
+    ctx.font='500 8px Inter,sans-serif';
+    ctx.fillStyle=isDimmed ? '#CCC5B8' : '#6B5744';
+    ctx.textBaseline='top';
+    ctx.fillText(p.name,p.x,p.y+radius+4);
+  });
+
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  QUICK INFO CARD
+// ═══════════════════════════════════════════════
+function showQuickCard(node){
+  tappedNode = node;
+  const card = document.getElementById('quickCard');
+  const color = TYPES[node.type];
+  const typeName = node.type.charAt(0).toUpperCase()+node.type.slice(1);
+
+  const relEdges = edges.filter(e=>e.from===node.id||e.to===node.id);
+  const subs = relEdges.filter(e=>e.type==='submission').length;
+  const sweeps = relEdges.filter(e=>e.type==='sweep').length;
+  const trans = relEdges.filter(e=>e.type==='transition').length;
+
+  card.innerHTML = `
+    <div class="quick-card-header">
+      <div class="quick-card-badge" style="background:${color}">${node.abbr}</div>
+      <div>
+        <div class="quick-card-name">${node.name}</div>
+        <div class="quick-card-type">${typeName} Position</div>
+      </div>
+    </div>
+    <div class="quick-card-stats">
+      ${subs?`<div class="quick-card-stat"><strong style="color:var(--sub)">${subs}</strong> subs</div>`:''}
+      ${sweeps?`<div class="quick-card-stat"><strong style="color:var(--sweep)">${sweeps}</strong> sweeps</div>`:''}
+      ${trans?`<div class="quick-card-stat"><strong style="color:var(--transition)">${trans}</strong> transitions</div>`:''}
+    </div>
+    <div class="quick-card-actions">
+      <button class="quick-card-btn secondary" onclick="dismissQuickCard();openDetail(positions.find(p=>p.id==='${node.id}'))">Details</button>
+      <button class="quick-card-btn primary" onclick="dismissQuickCard();openFocus(positions.find(p=>p.id==='${node.id}'))">Connections →</button>
+    </div>
+  `;
+  card.classList.add('open');
+  drawGraph();
+}
+
+function dismissQuickCard(){
+  tappedNode = null;
+  document.getElementById('quickCard').classList.remove('open');
+  drawGraph();
+}
+
+// ═══════════════════════════════════════════════
+//  TOUCH HANDLING
+// ═══════════════════════════════════════════════
+let touchStartTime=0, touchStartX=0, touchStartY=0;
+
+canvasContainer.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  const touches=e.touches;
+  touchStartTime=Date.now();
+  if(touches.length===1){
+    isPanning=true;
+    lastTouchX=touches[0].clientX;
+    lastTouchY=touches[0].clientY;
+    touchStartX=touches[0].clientX;
+    touchStartY=touches[0].clientY;
+  } else if(touches.length===2){
+    isPanning=false;
+    const dx=touches[1].clientX-touches[0].clientX;
+    const dy=touches[1].clientY-touches[0].clientY;
+    pinchDist=Math.sqrt(dx*dx+dy*dy);
+    startZoom=zoom;
+  }
+},{passive:false});
+
+canvasContainer.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  const touches=e.touches;
+  if(touches.length===1 && isPanning){
+    const dx=touches[0].clientX-lastTouchX;
+    const dy=touches[0].clientY-lastTouchY;
+    panX+=dx; panY+=dy;
+    lastTouchX=touches[0].clientX;
+    lastTouchY=touches[0].clientY;
+    drawGraph();
+  } else if(touches.length===2){
+    const dx=touches[1].clientX-touches[0].clientX;
+    const dy=touches[1].clientY-touches[0].clientY;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    const newZoom=startZoom*(dist/pinchDist);
+    zoom=Math.max(0.4,Math.min(3,newZoom));
+    drawGraph();
+  }
+},{passive:false});
+
+canvasContainer.addEventListener('touchend',e=>{
+  if(e.changedTouches.length===1){
+    const t=e.changedTouches[0];
+    const movedDist = Math.sqrt(Math.pow(t.clientX-touchStartX,2)+Math.pow(t.clientY-touchStartY,2));
+    if(Date.now()-touchStartTime<300 && movedDist<15){
+      const wp=screenToWorld(t.clientX,t.clientY);
+      // Check main graph edge labels first
+      if(activePath && mainGraphEdgeLabels.length > 0){
+        for(const el of mainGraphEdgeLabels){
+          const sx = el.x * zoom + panX;
+          const sy = el.y * zoom + panY;
+          if(Math.abs(t.clientX - sx) < (el.width/2 + 10)*zoom && Math.abs(t.clientY - sy) < 15*zoom){
+            showTechniquePopup(el.edge);
+            isPanning=false;
+            return;
+          }
+        }
+      }
+      const hit=positions.find(p=>{
+        const dx=p.x-wp.x, dy=p.y-wp.y;
+        return Math.sqrt(dx*dx+dy*dy)<p.radius+10;
+      });
+      if(hit){
+        showQuickCard(hit);
+      } else if(tappedNode) {
+        dismissQuickCard();
+      }
+    }
+  }
+  isPanning=false;
+});
+
+// Mouse support for desktop
+let mouseDown=false, mouseStartX, mouseStartY;
+canvasContainer.addEventListener('mousedown',e=>{
+  mouseDown=true; mouseStartX=e.clientX; mouseStartY=e.clientY;
+  lastTouchX=e.clientX; lastTouchY=e.clientY;
+  touchStartTime=Date.now();
+});
+canvasContainer.addEventListener('mousemove',e=>{
+  if(!mouseDown) return;
+  panX+=e.clientX-lastTouchX; panY+=e.clientY-lastTouchY;
+  lastTouchX=e.clientX; lastTouchY=e.clientY;
+  drawGraph();
+});
+canvasContainer.addEventListener('mouseup',e=>{
+  mouseDown=false;
+  const dx=e.clientX-mouseStartX, dy=e.clientY-mouseStartY;
+  if(Math.abs(dx)<5 && Math.abs(dy)<5 && Date.now()-touchStartTime<300){
+    const wp=screenToWorld(e.clientX,e.clientY);
+    const hit=positions.find(p=>{
+      const ddx=p.x-wp.x, ddy=p.y-wp.y;
+      return Math.sqrt(ddx*ddx+ddy*ddy)<p.radius+10;
+    });
+    if(hit){
+      showQuickCard(hit);
+    } else if(tappedNode) {
+      dismissQuickCard();
+    }
+  }
+});
+canvasContainer.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const delta=e.deltaY>0?0.92:1.08;
+  zoom=Math.max(0.4,Math.min(3,zoom*delta));
+  drawGraph();
+},{passive:false});
+
+// ═══════════════════════════════════════════════
+//  FOCUS MODE
+// ═══════════════════════════════════════════════
+let focusNode=null, perspective='top';
+let focusEdgeLabels = [];
+let mainGraphEdgeLabels = [];
+const focusCanvas=document.getElementById('focusCanvas');
+const fctx=focusCanvas.getContext('2d');
+
+function openFocus(node){
+  tappedNode=null;
+  focusNode=node;
+  document.getElementById('focusTitle').textContent=node.name;
+  document.getElementById('focusOverlay').classList.add('open');
+  setTimeout(()=>drawFocusView(),50);
+}
+function closeFocus(){
+  tappedNode=null;
+  document.getElementById('focusOverlay').classList.remove('open');
+  closeDetail();
+  closeTechniquePopup();
+  focusNode=null;
+}
+function setPerspective(p){
+  perspective=p;
+  document.getElementById('topPerspBtn').classList.toggle('active',p==='top');
+  document.getElementById('bottomPerspBtn').classList.toggle('active',p==='bottom');
+  drawFocusView();
+}
+
+function drawFocusView(){
+  if(!focusNode) return;
+  const rect=focusCanvas.parentElement.getBoundingClientRect();
+  const fw=rect.width, fh=rect.height;
+  focusCanvas.width=fw*dpr; focusCanvas.height=fh*dpr;
+  focusCanvas.style.width=fw+'px'; focusCanvas.style.height=fh+'px';
+  fctx.scale(dpr,dpr);
+
+  fctx.clearRect(0,0,fw,fh);
+  focusEdgeLabels = [];
+  const cx=fw/2, cy=fh/2-20;
+
+  // Get connected edges
+  let connected;
+  if(perspective==='top'){
+    connected=edges.filter(e=>e.from===focusNode.id);
+  } else {
+    connected=edges.filter(e=>e.to===focusNode.id);
+  }
+
+  // Get unique targets
+  const targetIds=[...new Set(connected.map(e=>perspective==='top'?e.to:e.from))];
+  const targets=targetIds.map(id=>positions.find(p=>p.id===id)).filter(Boolean);
+
+  // Radial layout
+  const radius=Math.min(fw,fh)*0.32;
+  const targetPositions=targets.map((t,i)=>{
+    const angle=(i/targets.length)*Math.PI*2 - Math.PI/2;
+    return {node:t, x:cx+Math.cos(angle)*radius, y:cy+Math.sin(angle)*radius};
+  });
+
+  // Group edges by target for label offset
+  const edgesByTarget = {};
+  connected.forEach(e => {
+    const targetId = perspective==='top' ? e.to : e.from;
+    if(!edgesByTarget[targetId]) edgesByTarget[targetId] = [];
+    edgesByTarget[targetId].push(e);
+  });
+
+  // Draw edges
+  connected.forEach(e=>{
+    const targetId=perspective==='top'?e.to:e.from;
+    const tp=targetPositions.find(t=>t.node.id===targetId);
+    if(!tp) return;
+    const color=EDGE_COLORS[e.type];
+    fctx.beginPath();
+    fctx.strokeStyle=color+'66';
+    fctx.lineWidth=1.5;
+    const mpx=(cx+tp.x)/2, mpy=(cy+tp.y)/2;
+    const dx=tp.x-cx, dy=tp.y-cy;
+    const cpx=mpx+dy*0.15, cpy=mpy-dx*0.15;
+    fctx.moveTo(cx,cy);
+    fctx.quadraticCurveTo(cpx,cpy,tp.x,tp.y);
+    fctx.stroke();
+
+    // Edge label with position offset for multiple edges to same target
+    const group = edgesByTarget[targetId];
+    const idx = group.indexOf(e);
+    const total = group.length;
+
+    // Spread label positions from 0.3 to 0.7 along the curve
+    const t = 0.3 + (idx / Math.max(total, 1)) * 0.4;
+    const labelX = (1-t)*(1-t)*cx + 2*(1-t)*t*cpx + t*t*tp.x;
+    const labelY = (1-t)*(1-t)*cy + 2*(1-t)*t*cpy + t*t*tp.y;
+
+    fctx.fillStyle=color;
+    fctx.font='500 8px Inter,sans-serif';
+    fctx.textAlign='center';
+    fctx.fillText(e.label,labelX,labelY);
+
+    // Store label hit area
+    focusEdgeLabels.push({
+      x: labelX,
+      y: labelY,
+      edge: e,
+      width: fctx.measureText(e.label).width
+    });
+
+    // Type dot
+    fctx.beginPath();
+    fctx.arc(labelX,labelY+8,3,0,Math.PI*2);
+    fctx.fillStyle=color;
+    fctx.fill();
+  });
+
+  // Draw target nodes
+  targetPositions.forEach(tp=>{
+    const color=TYPES[tp.node.type];
+    fctx.save();
+    fctx.shadowColor='rgba(44,24,16,0.1)';
+    fctx.shadowBlur=8;
+    fctx.shadowOffsetY=2;
+    fctx.beginPath();
+    fctx.arc(tp.x,tp.y,20,0,Math.PI*2);
+    fctx.fillStyle='#FFFFFF';
+    fctx.fill();
+    fctx.restore();
+    fctx.beginPath();
+    fctx.arc(tp.x,tp.y,20,0,Math.PI*2);
+    fctx.strokeStyle=color;
+    fctx.lineWidth=2;
+    fctx.stroke();
+    // Gradient fill
+    const tgrad=fctx.createRadialGradient(tp.x-3,tp.y-3,0,tp.x,tp.y,20);
+    tgrad.addColorStop(0,color+'15');
+    tgrad.addColorStop(1,color+'08');
+    fctx.fillStyle=tgrad;
+    fctx.fill();
+    // Abbreviation centered
+    fctx.fillStyle=color;
+    fctx.font='bold 8px Inter,sans-serif';
+    fctx.textAlign='center';
+    fctx.textBaseline='middle';
+    fctx.fillText(tp.node.abbr,tp.x,tp.y);
+    // Name below
+    fctx.fillStyle='#6B5744';
+    fctx.font='500 8px Inter,sans-serif';
+    fctx.textBaseline='top';
+    fctx.fillText(tp.node.name,tp.x,tp.y+22);
+  });
+
+  // Center node (bigger)
+  const mainColor=TYPES[focusNode.type];
+  fctx.save();
+  fctx.shadowColor='rgba(44,24,16,0.15)';
+  fctx.shadowBlur=16;
+  fctx.shadowOffsetY=4;
+  fctx.beginPath();
+  fctx.arc(cx,cy,32,0,Math.PI*2);
+  fctx.fillStyle='#FFFFFF';
+  fctx.fill();
+  fctx.restore();
+  fctx.beginPath();
+  fctx.arc(cx,cy,32,0,Math.PI*2);
+  fctx.strokeStyle=mainColor;
+  fctx.lineWidth=3;
+  fctx.stroke();
+  const grad2=fctx.createRadialGradient(cx-5,cy-5,0,cx,cy,32);
+  grad2.addColorStop(0,mainColor+'20');
+  grad2.addColorStop(1,mainColor+'08');
+  fctx.fillStyle=grad2;
+  fctx.fill();
+  // Abbreviation centered
+  fctx.fillStyle=mainColor;
+  fctx.font='bold 12px Inter,sans-serif';
+  fctx.textAlign='center';
+  fctx.textBaseline='middle';
+  fctx.fillText(focusNode.abbr,cx,cy);
+  // Name below
+  fctx.fillStyle='#6B5744';
+  fctx.font='500 9px Inter,sans-serif';
+  fctx.textBaseline='top';
+  fctx.fillText(focusNode.name,cx,cy+38);
+
+  // Touch targets for focus view
+  focusCanvas.onclick=function(ev){
+    const rect2=focusCanvas.getBoundingClientRect();
+    const mx=ev.clientX-rect2.left, my=ev.clientY-rect2.top;
+    // Check edge labels first
+    for(const el of focusEdgeLabels){
+      if(Math.abs(mx - el.x) < el.width/2 + 10 && Math.abs(my - el.y) < 15){
+        showTechniquePopup(el.edge);
+        return;
+      }
+    }
+    // Check center node
+    const cdx=mx-cx, cdy=my-cy;
+    if(Math.sqrt(cdx*cdx+cdy*cdy)<35){
+      openDetail(focusNode);
+      return;
+    }
+    // Check targets
+    for(const tp of targetPositions){
+      const tdx=mx-tp.x, tdy=my-tp.y;
+      if(Math.sqrt(tdx*tdx+tdy*tdy)<25){
+        focusNode=tp.node;
+        document.getElementById('focusTitle').textContent=tp.node.name;
+        drawFocusView();
+        return;
+      }
+    }
+  };
+}
+
+function openDetailFromFocus(){
+  if(focusNode) openDetail(focusNode);
+}
+
+// ═══════════════════════════════════════════════
+//  DETAIL PANEL
+// ═══════════════════════════════════════════════
+function openDetail(node){
+  const panel=document.getElementById('detailPanel');
+  const content=document.getElementById('detailContent');
+  const color=TYPES[node.type];
+  const typeName=node.type.charAt(0).toUpperCase()+node.type.slice(1);
+
+  const relEdges=edges.filter(e=>e.from===node.id||e.to===node.id);
+  const subs=relEdges.filter(e=>e.type==='submission');
+  const sweeps=relEdges.filter(e=>e.type==='sweep');
+  const trans=relEdges.filter(e=>e.type==='transition');
+
+  const isSaved = selectedPositions.has(node.id);
+
+  let html=`
+    <button onclick="closeDetail()" style="position:sticky;top:0;right:0;float:right;width:32px;height:32px;border-radius:16px;border:none;background:#F0EBE3;color:#6B5744;font-size:16px;cursor:pointer;z-index:10;margin:-4px -4px 0 0">✕</button>
+    <div class="detail-badge" style="background:${color}15;color:${color}">
+      <span style="width:8px;height:8px;border-radius:4px;background:${color};display:inline-block"></span>
+      ${typeName}
+    </div>
+    <div class="detail-name">${node.name}</div>
+    <div class="detail-desc">${node.desc}</div>
+    <button class="save-training-btn ${isSaved?'saved':''}" onclick="toggleSaveToTraining('${node.id}')" id="saveTrainBtn">
+      ${isSaved ? '✓ Saved to Training Plan' : '＋ Save to Training Plan'}
+    </button>
+  `;
+
+  if(node.details && node.details.length){
+    html+=`<div class="detail-section"><div class="detail-section-title">Key Details</div>`;
+    node.details.forEach(d=>{
+      html+=`<div class="detail-card"><div class="detail-card-text">• ${d}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+
+  if(subs.length){
+    html+=`<div class="detail-section"><div class="detail-section-title">Submissions (${subs.length})</div>`;
+    subs.forEach((s,idx)=>{
+      const descHtml = s.desc ? `<div style="font-size:13px;color:#6B5744;line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
+      const stepsHtml = s.steps ? s.steps.map((step,i)=>`<div class="technique-step"><span class="technique-step-num" style="background:var(--sub)">${i+1}</span><div>${step}</div></div>`).join('') : '';
+      html+=`<div class="detail-card technique-card" style="border-left:3px solid var(--sub);cursor:pointer" onclick="toggleTechniqueSteps(this)">
+        <div class="detail-card-title" style="color:var(--sub)">${s.label}</div>
+        ${stepsHtml ? `<div class="technique-steps" style="display:none;margin-top:8px;border-top:1px solid #eee;padding-top:8px">${descHtml}${stepsHtml}</div>` : ''}
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  if(sweeps.length){
+    html+=`<div class="detail-section"><div class="detail-section-title">Sweeps (${sweeps.length})</div>`;
+    sweeps.forEach((s,idx)=>{
+      const descHtml = s.desc ? `<div style="font-size:13px;color:#6B5744;line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
+      const stepsHtml = s.steps ? s.steps.map((step,i)=>`<div class="technique-step"><span class="technique-step-num" style="background:var(--sweep)">${i+1}</span><div>${step}</div></div>`).join('') : '';
+      html+=`<div class="detail-card technique-card" style="border-left:3px solid var(--sweep);cursor:pointer" onclick="toggleTechniqueSteps(this)">
+        <div class="detail-card-title" style="color:var(--sweep)">${s.label}</div>
+        ${stepsHtml ? `<div class="technique-steps" style="display:none;margin-top:8px;border-top:1px solid #eee;padding-top:8px">${descHtml}${stepsHtml}</div>` : ''}
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  if(trans.length){
+    html+=`<div class="detail-section"><div class="detail-section-title">Transitions (${trans.length})</div>`;
+    trans.forEach((s,idx)=>{
+      const descHtml = s.desc ? `<div style="font-size:13px;color:#6B5744;line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
+      const stepsHtml = s.steps ? s.steps.map((step,i)=>`<div class="technique-step"><span class="technique-step-num" style="background:var(--transition)">${i+1}</span><div>${step}</div></div>`).join('') : '';
+      html+=`<div class="detail-card technique-card" style="border-left:3px solid var(--transition);cursor:pointer" onclick="toggleTechniqueSteps(this)">
+        <div class="detail-card-title" style="color:var(--transition)">${s.label}</div>
+        ${stepsHtml ? `<div class="technique-steps" style="display:none;margin-top:8px;border-top:1px solid #eee;padding-top:8px">${descHtml}${stepsHtml}</div>` : ''}
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  if(node.mistakes && node.mistakes.length){
+    html+=`<div class="detail-section"><div class="detail-section-title">Common Mistakes</div>`;
+    node.mistakes.forEach(m=>{
+      html+=`<div class="detail-mistake"><div class="detail-mistake-text">⚠ ${m}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+
+  content.innerHTML=html;
+  panel.classList.add('open');
+  document.getElementById('panelBackdrop').classList.add('open');
+}
+
+let currentDetailNode=null;
+function toggleSaveToTraining(id){
+  if(selectedPositions.has(id)){
+    selectedPositions.delete(id);
+  } else if(selectedPositions.size<4){
+    selectedPositions.add(id);
+  } else {
+    // Already at max 4, show feedback
+    const btn=document.getElementById('saveTrainBtn');
+    if(btn){
+      btn.textContent='Max 4 positions reached';
+      setTimeout(()=>{ btn.textContent='＋ Save to Training Plan'; },1500);
+    }
+    return;
+  }
+  const btn=document.getElementById('saveTrainBtn');
+  const saved=selectedPositions.has(id);
+  if(btn){
+    btn.className='save-training-btn'+(saved?' saved':'');
+    btn.innerHTML=saved?'✓ Saved to Training Plan':'＋ Save to Training Plan';
+  }
+}
+
+function closeDetail(){
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('panelBackdrop').classList.remove('open');
+}
+
+function showTechniquePopup(edge) {
+  const popup = document.getElementById('techniquePopup');
+  const content = document.getElementById('techniquePopupContent');
+  const color = EDGE_COLORS[edge.type];
+  const typeLabel = edge.type.charAt(0).toUpperCase() + edge.type.slice(1);
+  const fromPos = positions.find(p => p.id === edge.from);
+  const toPos = positions.find(p => p.id === edge.to);
+
+  let html = `
+    <div class="technique-popup-header">
+      <div>
+        <div class="technique-popup-badge" style="background:${color}15;color:${color}">
+          <span style="width:6px;height:6px;border-radius:3px;background:${color};display:inline-block"></span>
+          ${typeLabel}
+        </div>
+        <div class="technique-popup-title" style="margin-top:6px">${edge.label}</div>
+      </div>
+      <button class="technique-popup-close" onclick="closeTechniquePopup()">✕</button>
+    </div>
+    <div class="technique-popup-from-to">
+      <span style="font-weight:600">${fromPos ? fromPos.name : edge.from}</span>
+      <span>→</span>
+      <span style="font-weight:600">${toPos ? toPos.name : edge.to}</span>
+    </div>
+  `;
+
+  if(edge.desc) {
+    html += `<div style="font-size:14px;color:#6B5744;line-height:1.5;margin-bottom:14px;padding:10px 12px;background:#FAF6F0;border-radius:10px">${edge.desc}</div>`;
+  }
+
+  if(edge.steps && edge.steps.length) {
+    html += '<div class="technique-popup-steps">';
+    edge.steps.forEach((step, i) => {
+      html += `<div class="technique-popup-step">
+        <div class="technique-popup-step-num" style="background:${color}">${i+1}</div>
+        <div class="technique-popup-step-text">${step}</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  content.innerHTML = html;
+  popup.classList.add('open');
+  document.getElementById('panelBackdrop').classList.add('open');
+}
+
+function closeTechniquePopup() {
+  document.getElementById('techniquePopup').classList.remove('open');
+  document.getElementById('panelBackdrop').classList.remove('open');
+}
+
+// Swipe-to-close for technique popup
+let techPopupTouchY = 0;
+document.getElementById('techniquePopup').addEventListener('touchstart', e => {
+  techPopupTouchY = e.touches[0].clientY;
+});
+document.getElementById('techniquePopup').addEventListener('touchmove', e => {
+  if(e.touches[0].clientY - techPopupTouchY > 50) closeTechniquePopup();
+});
+
+function toggleTechniqueSteps(el){
+  const stepsDiv = el.querySelector('.technique-steps');
+  if(stepsDiv){
+    const isHidden = stepsDiv.style.display === 'none';
+    stepsDiv.style.display = isHidden ? 'block' : 'none';
+    el.style.background = isHidden ? 'var(--surface2)' : '';
+  }
+}
+// Swipe down to close detail
+let detailTouchY=0;
+document.getElementById('detailPanel').addEventListener('touchstart',e=>{
+  detailTouchY=e.touches[0].clientY;
+});
+document.getElementById('detailPanel').addEventListener('touchmove',e=>{
+  if(e.touches[0].clientY-detailTouchY>50){
+    closeDetail();
+  }
+});
+
+// ═══════════════════════════════════════════════
+//  SEARCH
+// ═══════════════════════════════════════════════
+function openSearch(){
+  document.getElementById('searchOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('searchInput').focus(),350);
+  filterSearch();
+}
+function closeSearch(){
+  document.getElementById('searchOverlay').classList.remove('open');
+  document.getElementById('searchInput').value='';
+}
+function filterSearch(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const results=positions.filter(p=>
+    p.name.toLowerCase().includes(q)||
+    p.abbr.toLowerCase().includes(q)||
+    p.type.toLowerCase().includes(q)||
+    p.desc.toLowerCase().includes(q)
+  );
+  const container=document.getElementById('searchResults');
+  container.innerHTML=results.map(p=>`
+    <div class="search-result" onclick="searchSelect('${p.id}')">
+      <div class="search-result-dot" style="background:${TYPES[p.type]}"></div>
+      <div>
+        <div class="search-result-name">${p.name}</div>
+        <div class="search-result-type">${p.type.charAt(0).toUpperCase()+p.type.slice(1)} Position</div>
+      </div>
+    </div>
+  `).join('');
+}
+function searchSelect(id){
+  closeSearch();
+  const node=positions.find(p=>p.id===id);
+  if(node) openFocus(node);
+}
+
+// ═══════════════════════════════════════════════
+//  TRAINING PLAN
+// ═══════════════════════════════════════════════
+let selectedPositions=new Set();
+let planGenerated=false;
+
+function openTraining(){
+  document.getElementById('trainingDrawer').classList.add('open');
+  renderTraining();
+}
+function closeTraining(){
+  document.getElementById('trainingDrawer').classList.remove('open');
+}
+function renderTraining(){
+  const body=document.getElementById('trainingBody');
+  let html=`
+    <div style="margin-bottom:16px">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">Select Focus Positions</div>
+      <div style="font-size:12px;color:var(--text-muted)">Choose 2-4 positions to build your training plan around.</div>
+    </div>
+    <div class="chip-grid">
+  `;
+  positions.forEach(p=>{
+    const sel=selectedPositions.has(p.id);
+    html+=`<div class="chip ${sel?'selected':''}" onclick="toggleTrainPos('${p.id}')" style="${sel?'border-color:'+TYPES[p.type]+';background:'+TYPES[p.type]+'10;color:'+TYPES[p.type]:''}">${p.name}</div>`;
+  });
+  html+=`</div>`;
+  html+=`<button class="generate-btn" onclick="generatePlan()" ${selectedPositions.size<2?'style="opacity:0.5"':''}>
+    ${planGenerated?'Regenerate':'Generate'} Training Plan ${selectedPositions.size<2?'(select 2+)':''}
+  </button>`;
+
+  if(planGenerated){
+    html+=renderPlan();
+  }
+  body.innerHTML=html;
+}
+
+function toggleTrainPos(id){
+  if(selectedPositions.has(id)) selectedPositions.delete(id);
+  else if(selectedPositions.size<4) selectedPositions.add(id);
+  renderTraining();
+}
+
+function generatePlan(){
+  if(selectedPositions.size<2) return;
+  planGenerated=true;
+  renderTraining();
+}
+
+function renderPlan(){
+  const selected=[...selectedPositions].map(id=>positions.find(p=>p.id===id)).filter(Boolean);
+  const relEdges=edges.filter(e=>
+    selectedPositions.has(e.from)||selectedPositions.has(e.to)
+  );
+
+  const weeks=[
+    {title:'Week 1 — Fundamentals',drills:[
+      {color:'var(--accent)',text:`Positional sparring: ${selected[0]?.name||'Guard'} retention — 3 min rounds × 5`},
+      {color:'var(--sweep)',text:`Sweep chain drill: ${selected[0]?.name||'Guard'} → top position × 20 reps each side`},
+      {color:'var(--transition)',text:`Transition flow: ${selected.map(s=>s.name).join(' → ')} — 5 min continuous`},
+      {color:'var(--sub)',text:`Submission entries from ${selected[0]?.name||'Guard'} — isolate & drill × 15 each`}
+    ]},
+    {title:'Week 2 — Combinations',drills:[
+      {color:'var(--accent)',text:`Chain attacks: ${selected[1]?.name||'Mount'} — 2-3 technique chains × 20 reps`},
+      {color:'var(--sweep)',text:`Sweep-to-pass sequences from ${selected[0]?.name||'Guard'} × 15 reps`},
+      {color:'var(--transition)',text:`Escape & counter drill: defend ${selected[1]?.name||'Mount'} → ${selected[0]?.name||'Guard'}`},
+      {color:'var(--sub)',text:`Live submission rounds from selected positions — 3 min × 6`}
+    ]},
+    {title:'Week 3 — Integration',drills:[
+      {color:'var(--accent)',text:`Full flow sparring emphasizing selected positions — 5 min × 4`},
+      {color:'var(--sweep)',text:`Shark tank: hold ${selected[0]?.name||'Guard'} vs fresh opponents — 2 min rotations`},
+      {color:'var(--transition)',text:`Situational sparring: start in each selected position — 3 min × 4`},
+      {color:'var(--sub)',text:`Competition simulation rounds with scoring emphasis — 6 min × 3`}
+    ]}
+  ];
+
+  let html=`<div class="plan-output fade-in">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#D4652E);display:flex;align-items:center;justify-content:center;color:white;font-size:14px">📋</div>
+      <div>
+        <div style="font-size:14px;font-weight:700">3-Week Training Plan</div>
+        <div style="font-size:11px;color:var(--text-muted)">Based on ${selected.length} selected positions</div>
+      </div>
+    </div>`;
+  weeks.forEach(w=>{
+    html+=`<div class="plan-week"><div class="plan-week-title">${w.title}</div>`;
+    w.drills.forEach(d=>{
+      html+=`<div class="plan-drill"><div class="plan-drill-dot" style="background:${d.color}"></div><div class="plan-drill-text">${d.text}</div></div>`;
+    });
+    html+=`</div>`;
+  });
+  html+=`</div>`;
+  return html;
+}
+
+// ═══════════════════════════════════════════════
+//  VIEW SWITCHING
+// ═══════════════════════════════════════════════
+function switchView(view){
+  document.querySelectorAll('.nav-item').forEach((n,i)=>{
+    n.classList.toggle('active',
+      (view==='graph'&&i===0)||(view==='positions'&&i===1)||(view==='paths'&&i===2)||(view==='journal'&&i===3)||(view==='me'&&i===4)
+    );
+  });
+  if(view==='positions'){
+    openSearch();
+  } else if(view==='paths'){
+    openPaths();
+  } else if(view==='journal'){
+    openJournal();
+  } else if(view==='me'){
+    openMe();
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  PATH BUILDER STATE & FUNCTIONS
+// ═══════════════════════════════════════════════
+let currentPath = [];
+let savedPaths = [];
+let activePath = null; // When set, drawGraph highlights this path
+
+function openPaths(){
+  const overlay = document.getElementById('pathOverlay');
+  overlay.classList.add('open');
+  renderPathBuilder();
+}
+
+function closePaths(){
+  document.getElementById('pathOverlay').classList.remove('open');
+  currentPath = [];
+}
+
+function renderPathBuilder(){
+  const content = document.getElementById('pathContent');
+
+  if(currentPath.length === 0){
+    // Show saved paths first
+    let html = '';
+    if(savedPaths.length > 0){
+      html = '<div class="path-options"><div class="path-section-title">Saved Paths</div>';
+      savedPaths.forEach((sp, idx) => {
+        html += `<div class="path-step">
+          <div class="path-step-left">
+            <div class="path-step-name">${sp.name}</div>
+            <div class="path-step-label">${sp.chain.length} steps</div>
+          </div>
+          <span onclick="viewPathOnGraph(savedPaths[${idx}])" style="color:var(--accent);font-weight:600;cursor:pointer;font-size:12px">View →</span>
+        </div>`;
+      });
+      html += '</div>';
+      html += '<div class="path-options"><div class="path-section-title">Start New Path</div>';
+    } else {
+      html = '<div class="path-options"><div class="path-section-title">Start Position</div>';
+    }
+
+    // Show position selector
+    positions.forEach(pos => {
+      const color = TYPES[pos.type];
+      html += `<div class="path-step" onclick="startPathFromPosition('${pos.id}')">
+        <div class="path-step-left">
+          <div class="path-step-name">${pos.name}</div>
+          <div class="path-step-label">${pos.type}</div>
+        </div>
+        <div style="width:8px;height:8px;border-radius:4px;background:${color}"></div>
+      </div>`;
+    });
+    html += '</div>';
+    content.innerHTML = html;
+  } else {
+    // Show current path chain and options
+    renderPathChain();
+  }
+}
+
+function renderPathChain(){
+  const content = document.getElementById('pathContent');
+  const currentPos = currentPath[currentPath.length - 1];
+
+  // Build chain display
+  let chainHtml = '<div class="path-chain">';
+  currentPath.forEach((item, idx) => {
+    const isPos = item.type !== 'submission' && item.type !== 'sweep' && item.type !== 'transition';
+    const color = isPos ? TYPES[item.type] : EDGE_COLORS[item.type];
+    chainHtml += `<div class="path-chain-item" style="border-color:${color};color:${color}">
+      ${isPos ? item.name : item.label}
+    </div>`;
+    if(idx < currentPath.length - 1) chainHtml += '<div style="color:var(--text-muted);padding:0 4px">→</div>';
+  });
+  chainHtml += '</div>';
+
+  // Get available next techniques
+  const availableEdges = edges.filter(e => e.from === currentPos.id);
+
+  let html = chainHtml + '<div class="path-options">';
+
+  // Group by type
+  const subs = availableEdges.filter(e => e.type === 'submission');
+  const sweeps = availableEdges.filter(e => e.type === 'sweep');
+  const trans = availableEdges.filter(e => e.type === 'transition');
+
+  if(subs.length){
+    html += '<div class="path-section-title">Submissions</div>';
+    subs.forEach(e => {
+      const dest = positions.find(p => p.id === e.to);
+      html += `<div class="path-step" onclick="addToPath('${e.to}', '${e.label}', '${e.type}')">
+        <div class="path-step-left">
+          <div class="path-step-name" style="color:var(--sub)">${e.label}</div>
+          <div class="path-step-label">→ ${dest.name}</div>
+        </div>
+        <span class="path-step-arrow">→</span>
+      </div>`;
+    });
+  }
+
+  if(sweeps.length){
+    html += '<div class="path-section-title">Sweeps</div>';
+    sweeps.forEach(e => {
+      const dest = positions.find(p => p.id === e.to);
+      html += `<div class="path-step" onclick="addToPath('${e.to}', '${e.label}', '${e.type}')">
+        <div class="path-step-left">
+          <div class="path-step-name" style="color:var(--sweep)">${e.label}</div>
+          <div class="path-step-label">→ ${dest.name}</div>
+        </div>
+        <span class="path-step-arrow">→</span>
+      </div>`;
+    });
+  }
+
+  if(trans.length){
+    html += '<div class="path-section-title">Transitions</div>';
+    trans.forEach(e => {
+      const dest = positions.find(p => p.id === e.to);
+      html += `<div class="path-step" onclick="addToPath('${e.to}', '${e.label}', '${e.type}')">
+        <div class="path-step-left">
+          <div class="path-step-name" style="color:var(--transition)">${e.label}</div>
+          <div class="path-step-label">→ ${dest.name}</div>
+        </div>
+        <span class="path-step-arrow">→</span>
+      </div>`;
+    });
+  }
+
+  html += '</div>';
+
+  if(currentPath.length > 1){
+    html += `<button class="path-action-btn" onclick="undoPathStep()" style="background:var(--surface2);color:var(--text-primary);border:1px solid var(--border)">← Back</button>`;
+  }
+
+  if(currentPath.length > 2){
+    html += `<button class="path-action-btn" onclick="viewPathOnGraph({name:'Current',chain:[...currentPath]})" style="background:var(--accent);color:white">🗺️ View on Graph</button>`;
+  }
+
+  html += `<button class="path-action-btn" onclick="saveCurrentPath()">💾 Save Path</button>`;
+
+  content.innerHTML = html;
+}
+
+function startPathFromPosition(posId){
+  const pos = positions.find(p => p.id === posId);
+  currentPath = [pos];
+  renderPathBuilder();
+}
+
+function addToPath(posId, label, type){
+  const pos = positions.find(p => p.id === posId);
+  currentPath.push({id:posId, name:label, type:type, position:pos});
+  currentPath.push(pos);
+  renderPathBuilder();
+}
+
+function undoPathStep(){
+  if(currentPath.length > 1){
+    currentPath.pop();
+    currentPath.pop();
+  } else {
+    currentPath = [];
+  }
+  renderPathBuilder();
+}
+
+function saveCurrentPath(){
+  if(currentPath.length > 1){
+    const pathName = currentPath.map((item, idx) => {
+      if(idx % 2 === 0 && item.name) return item.name;
+      if(idx % 2 === 1 && item.type) return item.type;
+      return '';
+    }).filter(Boolean).join(' → ');
+
+    savedPaths.push({name: pathName, chain: [...currentPath]});
+    currentPath = [];
+    renderPathBuilder();
+  }
+}
+
+function viewPathOnGraph(path){
+  activePath = path;
+  closePaths();
+  closeFocus();
+  // Auto-center on path nodes
+  const pathPositions = path.chain.filter((item,i) => i%2===0 && item.x !== undefined);
+  if(pathPositions.length > 0){
+    const minX = Math.min(...pathPositions.map(p=>p.x));
+    const maxX = Math.max(...pathPositions.map(p=>p.x));
+    const minY = Math.min(...pathPositions.map(p=>p.y));
+    const maxY = Math.max(...pathPositions.map(p=>p.y));
+    const cx = (minX+maxX)/2;
+    const cy = (minY+maxY)/2;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    zoom = Math.min(W/(maxX-minX+200), H/(maxY-minY+200), 2);
+    zoom = Math.max(0.5, zoom);
+    panX = W/2 - cx*zoom;
+    panY = H/2 - cy*zoom;
+  }
+  drawGraph();
+  showPathBanner();
+}
+
+function clearActivePath(){
+  activePath = null;
+  document.getElementById('pathBanner')?.remove();
+  drawGraph();
+}
+
+function showPathBanner(){
+  document.getElementById('pathBanner')?.remove();
+  const banner = document.createElement('div');
+  banner.id = 'pathBanner';
+  banner.innerHTML = `<span style="font-weight:600">🔗 Path Active</span><span onclick="clearActivePath()" style="cursor:pointer;margin-left:12px;font-weight:600">✕ Clear</span>`;
+  Object.assign(banner.style, {
+    position:'fixed', top:'60px', left:'50%', transform:'translateX(-50%)',
+    background:'var(--accent)', color:'white', padding:'8px 18px',
+    borderRadius:'20px', fontSize:'13px', zIndex:'200',
+    display:'flex', alignItems:'center', gap:'8px',
+    boxShadow:'0 2px 12px rgba(0,0,0,0.15)'
+  });
+  document.body.appendChild(banner);
+}
+
+// ═══════════════════════════════════════════════
+//  JOURNAL SYSTEM
+// ═══════════════════════════════════════════════
+let journalEntries = JSON.parse(localStorage.getItem('bjj_journal') || '[]');
+let trainingGoals = JSON.parse(localStorage.getItem('bjj_goals') || '[]');
+let journalDate = new Date().toISOString().split('T')[0];
+let journalViewMode = 'entry'; // 'entry', 'history', or 'goals'
+let editingEntry = null;
+
+function openJournal(){
+  const overlay = document.getElementById('journalOverlay');
+  overlay.classList.add('open');
+  journalViewMode = 'entry';
+  journalDate = new Date().toISOString().split('T')[0];
+  editingEntry = null;
+  renderJournalEntry();
+}
+
+function closeJournal(){
+  document.getElementById('journalOverlay').classList.remove('open');
+}
+
+function setJournalTab(tab){
+  journalViewMode = tab;
+  document.querySelectorAll('#journalOverlay .tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active',
+      (tab==='entry'&&i===0)||(tab==='history'&&i===1)||(tab==='goals'&&i===2)
+    );
+  });
+  if(tab === 'entry') renderJournalEntry();
+  else if(tab === 'history') renderJournalHistory();
+  else if(tab === 'goals') renderGoalsView();
+}
+
+function renderJournalEntry(){
+  const body = document.getElementById('journalBody');
+  let html = '';
+
+  // Date nav
+  html += `<div class="journal-date-nav">
+    <button onclick="journalDate=new Date(new Date(journalDate).getTime()-86400000).toISOString().split('T')[0];renderJournalEntry()">←</button>
+    <div class="date-display">${new Date(journalDate+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</div>
+    <button onclick="journalDate=new Date(new Date(journalDate).getTime()+86400000).toISOString().split('T')[0];renderJournalEntry()">→</button>
+  </div>`;
+
+  // Load or create editingEntry for this date
+  if(!editingEntry || editingEntry.date !== journalDate){
+    editingEntry = journalEntries.find(e => e.date === journalDate);
+    if(!editingEntry){
+      editingEntry = {date: journalDate, rating: 0, movesOfDay: '', notes: '', rounds: []};
+    }
+  }
+  const entry = editingEntry;
+
+  // Active goals reminder
+  const activeGoals = trainingGoals.filter(g => !g.completed);
+  if(activeGoals.length > 0){
+    html += '<div class="journal-section" style="background:var(--primary)08;border-color:var(--primary)33">';
+    html += '<div class="journal-section-title" style="color:var(--primary)">Today\'s Focus</div>';
+    activeGoals.forEach(g => {
+      const color = g.goalType === 'submission' ? 'var(--sub)' : g.goalType === 'sweep' ? 'var(--sweep)' : 'var(--primary)';
+      html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="color:${color};font-weight:600;font-size:12px">${g.count}/${g.target}</span>
+        <span style="font-size:13px;color:var(--text-primary)">${g.name}</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  // Session rating (1-5)
+  html += `<div class="journal-section">
+    <div class="journal-section-title">Session Rating</div>
+    <div class="journal-rating">`;
+  for(let i=1; i<=5; i++){
+    html += `<span class="${entry.rating===i?'active':''}" onclick="editingEntry.rating=${i};renderJournalEntry()">${i}</span>`;
+  }
+  html += `</div></div>`;
+
+  // Moves of the day
+  html += `<div class="journal-section">
+    <div class="journal-section-title">Moves of the Day</div>
+    <div class="journal-field">
+      <input type="text" placeholder="e.g., Arm triangle from mount, back take from turtle" value="${entry.movesOfDay}" onchange="editingEntry.movesOfDay=this.value;saveJournalEntry()">
+    </div>
+  </div>`;
+
+  // Key details
+  html += `<div class="journal-section">
+    <div class="journal-section-title">Key Details</div>
+    <div class="journal-field">
+      <textarea placeholder="How did the session go? Any breakthroughs or challenges?" onchange="editingEntry.notes=this.value;saveJournalEntry()">${entry.notes}</textarea>
+    </div>
+  </div>`;
+
+  // Sparring rounds
+  html += `<div class="journal-section">
+    <div class="journal-section-title">Sparring Rounds (${entry.rounds.length})</div>`;
+
+  entry.rounds.forEach((round, idx) => {
+    const oppRecord = getOpponentRecord(round.opponent);
+    const beltColors = {white:'#F5F0E8',blue:'#1A5FB4',purple:'#6B3FA0',brown:'#7B4B2A',black:'#2C2C2C'};
+    const beltCol = beltColors[round.belt] || 'var(--border)';
+    html += `<div class="round-card" style="border-left:4px solid ${beltCol}">
+      <div class="round-card-header">
+        <strong>${round.opponent || 'Opponent'}${round.belt ? ' <span style="display:inline-block;width:24px;height:6px;border-radius:2px;background:'+beltCol+';vertical-align:middle;margin-left:6px;border:1px solid '+(round.belt==='white'?'#CCC':'transparent')+'"></span>' : ''}</strong>
+        <span class="round-remove" onclick="editingEntry.rounds.splice(${idx},1);renderJournalEntry();saveJournalEntry()">×</span>
+      </div>`;
+
+    // Opponent record
+    if(oppRecord) html += `<div class="opponent-record">
+      <span>Got: ${oppRecord.got}</span>
+      <span>Gave: ${oppRecord.gave}</span>
+    </div>`;
+
+    // Round details — opponent with autocomplete + belt color picker
+    const knownOpponents = getKnownOpponents();
+    html += `<div style="margin-top:8px">
+      <input type="text" list="oppList${idx}" placeholder="Opponent name" value="${round.opponent}" onchange="editingEntry.rounds[${idx}].opponent=this.value;saveJournalEntry();renderJournalEntry()" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;font-size:14px;background:var(--bg);color:var(--text-primary);box-sizing:border-box">
+      <datalist id="oppList${idx}">${knownOpponents.map(n=>'<option value="'+n+'">').join('')}</datalist>
+      <div class="belt-picker" style="display:flex;gap:6px;margin-bottom:8px">
+        ${['white','blue','purple','brown','black'].map(b => {
+          const bColors = {white:'#F5F0E8',blue:'#1A5FB4',purple:'#6B3FA0',brown:'#7B4B2A',black:'#2C2C2C'};
+          const sel = round.belt === b;
+          return `<div onclick="editingEntry.rounds[${idx}].belt='${b}';saveJournalEntry();renderJournalEntry()" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:8px;border:2px solid ${sel?bColors[b]:'transparent'};background:${sel?bColors[b]+'18':'var(--bg)'}">
+            <div style="width:32px;height:8px;border-radius:2px;background:${bColors[b]};border:1px solid ${b==='white'?'#CCC':'transparent'}"></div>
+            <span style="font-size:10px;color:${sel?bColors[b]:'var(--text-muted)'};font-weight:${sel?'700':'500'};text-transform:capitalize">${b}</span>
+          </div>`;
+        }).join('')}
+      </div>
+      <textarea placeholder="Round notes..." onchange="editingEntry.rounds[${idx}].notes=this.value;saveJournalEntry()" style="width:100%;padding:6px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;font-size:12px;min-height:40px">${round.notes}</textarea>`;
+
+    // Submissions
+    html += `<div style="margin-bottom:6px">`;
+    (round.submissions || []).forEach((sub, subIdx) => {
+      const subEdge = edges.find(e => e.label === sub.name && e.type === 'submission');
+      html += `<span class="sub-tag ${sub.direction}">${sub.direction==='got'?'Got':'Gave'}: ${sub.name} <span onclick="editingEntry.rounds[${idx}].submissions.splice(${subIdx},1);renderJournalEntry();saveJournalEntry()" style="cursor:pointer;font-weight:700">×</span></span>`;
+    });
+    html += `</div>`;
+
+    // Chain display
+    if(round.chain && round.chain.length > 0){
+      html += '<div class="move-chain-display" style="margin-top:6px">';
+      round.chain.forEach((item, cidx) => {
+        const isPos = cidx % 2 === 0;
+        const color = isPos ? (TYPES[item.type]||'#666') : (EDGE_COLORS[item.type]||'#666');
+        html += `<span class="move-chain-item" style="border-color:${color};color:${color}">${isPos ? item.name : item.label}</span>`;
+        if(cidx < round.chain.length - 1) html += '<span class="chain-arrow">→</span>';
+      });
+      html += '</div>';
+    }
+
+    html += `<div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="add-btn" onclick="openSubSelector(${idx},'got')">+ Got Sub</button>
+      <button class="add-btn" onclick="openSubSelector(${idx},'gave')">+ Gave Sub</button>
+      <button class="add-btn" onclick="openChainBuilder(${idx})">🔗 Chain</button>
+    </div>
+    </div></div>`;
+  });
+
+  html += `<button class="add-btn" onclick="editingEntry.rounds.push({opponent:'',belt:'',notes:'',submissions:[],chain:[]});renderJournalEntry()">+ Add Round</button>`;
+  html += `</div>`;
+
+  // Save button
+  html += `<button class="path-action-btn" onclick="saveSessionAndPrompt()">💾 Save Entry</button>`;
+
+  body.innerHTML = html;
+}
+
+function renderJournalHistory(){
+  const body = document.getElementById('journalBody');
+  let html = '<div style="margin-top:16px">';
+
+  const sorted = [...journalEntries].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  if(sorted.length === 0){
+    html += '<p style="color:var(--text-muted);text-align:center;padding:40px 20px">No entries yet. Start logging your sessions!</p>';
+  } else {
+    sorted.forEach((entry, idx) => {
+      html += `<div class="journal-entry-card" onclick="journalDate='${entry.date}';journalViewMode='entry';renderJournalEntry()">
+        <div class="entry-date">${new Date(entry.date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</div>
+        <div class="entry-summary">
+          Rating: ${'●'.repeat(entry.rating)}${'○'.repeat(5-entry.rating)} | ${entry.rounds.length} round${entry.rounds.length!==1?'s':''} | ${entry.movesOfDay?entry.movesOfDay.split(',')[0].trim():'No notes'}
+        </div>
+      </div>`;
+    });
+  }
+
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+function renderGoalsView(){
+  const body = document.getElementById('journalBody');
+  let html = '';
+
+  // Active goals
+  const active = trainingGoals.filter(g => !g.completed);
+  const completed = trainingGoals.filter(g => g.completed);
+
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div style="font-size:15px;font-weight:600">Active Goals</div><button class="add-btn" onclick="openAddGoal()">+ New Goal</button></div>';
+
+  if(active.length === 0){
+    html += '<div style="text-align:center;padding:30px;color:var(--text-muted)">No active goals. Add one to start tracking!</div>';
+  }
+
+  active.forEach((goal, idx) => {
+    const realIdx = trainingGoals.indexOf(goal);
+    const pct = Math.min(100, Math.round((goal.count / goal.target) * 100));
+    const color = goal.goalType === 'submission' ? 'var(--sub)' : goal.goalType === 'sweep' ? 'var(--sweep)' : goal.goalType === 'position' ? 'var(--primary)' : 'var(--transition)';
+
+    html += `<div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px">`;
+    // Header with hit button
+    html += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary)">${goal.name}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${goal.goalType} · ${goal.notes || 'No notes'}</div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:${color}">${goal.count}/${goal.target}</div>
+      <button class="goal-hit-btn" onclick="hitGoal(${realIdx})" style="border-color:${color};color:${color}">Hit It!</button>
+    </div>`;
+    // Progress bar
+    html += `<div style="background:var(--border);height:6px;border-radius:3px;margin-bottom:12px;overflow:hidden">
+      <div style="width:${pct}%;height:100%;background:${color};border-radius:3px;transition:width 0.3s"></div>
+    </div>`;
+    // Strategy insights
+    const insights = getGoalInsights(goal);
+    if(insights.length > 0){
+      html += '<div style="border-top:1px solid var(--border);padding-top:10px">';
+      html += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:8px">Strategy</div>';
+      insights.forEach(ins => {
+        html += `<div style="display:flex;gap:8px;margin-bottom:8px;align-items:start">
+          <span style="font-size:12px;flex-shrink:0">${ins.icon}</span>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-primary)">${ins.title}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;line-height:1.4">${ins.detail}</div>
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  if(completed.length > 0){
+    html += '<div style="font-size:15px;font-weight:600;margin:24px 0 12px;color:var(--text-muted)">Completed</div>';
+    completed.forEach(goal => {
+      html += `<div class="goal-item" style="opacity:0.6">
+        <div class="goal-progress" style="background:var(--sweep)15;color:var(--sweep);border:2px solid var(--sweep)">✓</div>
+        <div class="goal-info">
+          <div class="goal-name" style="text-decoration:line-through">${goal.name}</div>
+          <div class="goal-detail">${goal.goalType} · Completed!</div>
+        </div>
+      </div>`;
+    });
+  }
+
+  body.innerHTML = html;
+}
+
+function hitGoal(idx){
+  const goal = trainingGoals[idx];
+  if(!goal || goal.completed) return;
+  goal.count++;
+  localStorage.setItem('bjj_goals', JSON.stringify(trainingGoals));
+
+  if(goal.count >= goal.target){
+    setTimeout(() => {
+      if(confirm(`You've hit "${goal.name}" ${goal.target} times! Do you feel confident enough to move on to the next move?`)){
+        goal.completed = true;
+        goal.completedDate = new Date().toISOString().split('T')[0];
+        localStorage.setItem('bjj_goals', JSON.stringify(trainingGoals));
+      }
+      renderGoalsView();
+    }, 200);
+  } else {
+    renderGoalsView();
+  }
+}
+
+function openAddGoal(){
+  const body = document.getElementById('journalBody');
+  let html = '<div class="journal-section">';
+  html += '<div class="journal-section-title">New Training Goal</div>';
+
+  // Goal type selector
+  html += `<div class="journal-field">
+    <label>Goal Type</label>
+    <select id="goalTypeSelect" onchange="updateGoalOptions()">
+      <option value="position">Position</option>
+      <option value="submission">Submission</option>
+      <option value="sweep">Sweep</option>
+      <option value="transition">Transition</option>
+      <option value="custom">Custom</option>
+    </select>
+  </div>`;
+
+  // Move selector (dynamic based on type)
+  html += '<div id="goalMoveSelector"></div>';
+
+  // Target count
+  html += `<div class="journal-field">
+    <label>Target Reps</label>
+    <input type="number" id="goalTarget" value="10" min="1" max="100">
+  </div>`;
+
+  // Notes
+  html += `<div class="journal-field">
+    <label>Notes</label>
+    <input type="text" id="goalNotes" placeholder="Any details about this goal...">
+  </div>`;
+
+  html += `<div style="display:flex;gap:8px;margin-top:16px">
+    <button class="add-btn" onclick="renderGoalsView()" style="flex:1">Cancel</button>
+    <button class="add-btn" onclick="saveNewGoal()" style="flex:1;background:var(--primary);color:white;border-color:var(--primary)">Save Goal</button>
+  </div>`;
+
+  html += '</div>';
+  body.innerHTML = html;
+
+  // Initialize move options
+  setTimeout(updateGoalOptions, 50);
+}
+
+function updateGoalOptions(){
+  const type = document.getElementById('goalTypeSelect').value;
+  const container = document.getElementById('goalMoveSelector');
+  let html = '';
+
+  if(type === 'custom'){
+    html = `<div class="journal-field"><label>Goal Name</label><input type="text" id="goalCustomName" placeholder="e.g., Work on guard retention"></div>`;
+  } else if(type === 'position'){
+    html = '<div class="journal-field"><label>Position</label><select id="goalMoveSelect">';
+    positions.forEach(p => { html += `<option value="${p.name}">${p.name}</option>`; });
+    html += '</select></div>';
+  } else {
+    const typeEdges = [...new Set(edges.filter(e => e.type === type).map(e => e.label))].sort();
+    html = `<div class="journal-field"><label>${type.charAt(0).toUpperCase()+type.slice(1)}</label><select id="goalMoveSelect">`;
+    typeEdges.forEach(label => { html += `<option value="${label}">${label}</option>`; });
+    html += '</select></div>';
+  }
+
+  container.innerHTML = html;
+}
+
+function saveNewGoal(){
+  const type = document.getElementById('goalTypeSelect').value;
+  const target = parseInt(document.getElementById('goalTarget').value) || 10;
+  const notes = document.getElementById('goalNotes').value;
+  let name;
+
+  if(type === 'custom'){
+    name = document.getElementById('goalCustomName')?.value || 'Custom Goal';
+  } else {
+    name = document.getElementById('goalMoveSelect')?.value || type;
+  }
+
+  trainingGoals.push({
+    name: name,
+    goalType: type,
+    count: 0,
+    target: target,
+    notes: notes,
+    completed: false,
+    createdDate: new Date().toISOString().split('T')[0]
+  });
+
+  localStorage.setItem('bjj_goals', JSON.stringify(trainingGoals));
+  renderGoalsView();
+}
+
+function saveSessionAndPrompt(){
+  saveJournalEntry();
+  if(confirm('Session saved! Want to log another training session?')){
+    // Reset to fresh entry on same date
+    editingEntry = {date: journalDate, rating: 0, movesOfDay: '', notes: '', rounds: []};
+    renderJournalEntry();
+  } else {
+    // Reset form to show saved state cleanly
+    editingEntry = null;
+    renderJournalEntry();
+  }
+}
+
+function saveJournalEntry(){
+  if(!editingEntry) return;
+  const copy = JSON.parse(JSON.stringify(editingEntry));
+  const idx = journalEntries.findIndex(e => e.date === journalDate);
+  if(idx >= 0){
+    journalEntries[idx] = copy;
+  } else {
+    journalEntries.push(copy);
+  }
+  localStorage.setItem('bjj_journal', JSON.stringify(journalEntries));
+}
+
+function getOpponentRecord(name){
+  if(!name) return null;
+  let got = 0, gave = 0;
+  journalEntries.forEach(entry => {
+    entry.rounds?.forEach(round => {
+      if(round.opponent?.toLowerCase() === name.toLowerCase()){
+        round.submissions?.forEach(sub => {
+          if(sub.direction === 'got') got++;
+          else if(sub.direction === 'gave') gave++;
+        });
+      }
+    });
+  });
+  return got || gave ? {got, gave} : null;
+}
+
+function getKnownOpponents(){
+  const names = new Set();
+  journalEntries.forEach(entry => {
+    entry.rounds?.forEach(round => {
+      if(round.opponent && round.opponent.trim()) names.add(round.opponent.trim());
+    });
+  });
+  // Also check current editing entry
+  if(editingEntry){
+    editingEntry.rounds?.forEach(round => {
+      if(round.opponent && round.opponent.trim()) names.add(round.opponent.trim());
+    });
+  }
+  return [...names].sort();
+}
+
+function openSubSelector(roundIdx, direction){
+  const subs = [...new Set(edges.filter(e => e.type === 'submission').map(e => e.label))].sort();
+  let modal = document.createElement('div');
+  modal.className = 'move-selector-modal';
+  modal.onclick = (ev) => { if(ev.target === modal) modal.remove(); };
+  let html = '<div class="move-selector-content">';
+  html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <strong style="font-size:16px">${direction === 'got' ? 'Submission You Got' : 'Submission You Gave Up'}</strong>
+    <span onclick="this.closest('.move-selector-modal').remove()" style="cursor:pointer;font-size:20px">✕</span>
+  </div>`;
+  subs.forEach(sub => {
+    html += `<div class="path-step" style="cursor:pointer" onclick="addSubToRound(${roundIdx},'${direction}','${sub.replace(/'/g,"\\'")}');this.closest('.move-selector-modal').remove()">
+      <div class="path-step-left">
+        <div class="path-step-name" style="color:var(--sub)">${sub}</div>
+      </div>
+      <span style="color:var(--text-muted)">+</span>
+    </div>`;
+  });
+  html += '</div>';
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
+}
+
+function addSubToRound(roundIdx, direction, subName){
+  if(editingEntry && editingEntry.rounds[roundIdx]){
+    if(!editingEntry.rounds[roundIdx].submissions) editingEntry.rounds[roundIdx].submissions = [];
+    editingEntry.rounds[roundIdx].submissions.push({direction: direction, name: subName});
+    saveJournalEntry();
+    renderJournalEntry();
+  }
+}
+
+function openChainBuilder(roundIdx){
+  let chainState = [];
+
+  function renderChainModal(){
+    let modal = document.querySelector('.move-selector-modal.chain-modal');
+    if(!modal){
+      modal = document.createElement('div');
+      modal.className = 'move-selector-modal chain-modal';
+      modal.onclick = (ev) => { if(ev.target === modal) modal.remove(); };
+      document.body.appendChild(modal);
+    }
+
+    let html = '<div class="move-selector-content" style="max-height:80vh;display:flex;flex-direction:column;padding:0">';
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:20px 20px 12px">
+      <strong style="font-size:16px">Build Chain</strong>
+      <span onclick="this.closest('.move-selector-modal').remove()" style="cursor:pointer;font-size:20px">✕</span>
+    </div>`;
+    html += '<div style="flex:1;overflow-y:auto;padding:0 20px">';
+
+    // Show current chain
+    if(chainState.length > 0){
+      html += '<div class="move-chain-display">';
+      chainState.forEach((item, idx) => {
+        const isPos = idx % 2 === 0;
+        const color = isPos ? (TYPES[item.type]||'#666') : (EDGE_COLORS[item.type]||'#666');
+        html += `<span class="move-chain-item" style="border-color:${color};color:${color}">${isPos ? item.name : item.label}</span>`;
+        if(idx < chainState.length - 1) html += '<span class="chain-arrow">→</span>';
+      });
+      html += '</div>';
+    }
+
+    if(chainState.length === 0){
+      // Pick starting position
+      html += '<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Pick starting position:</div>';
+      positions.forEach(pos => {
+        const color = TYPES[pos.type];
+        html += `<div class="path-step" style="cursor:pointer" onclick="window._chainAddPos('${pos.id}')">
+          <div class="path-step-left">
+            <div class="path-step-name">${pos.name}</div>
+            <div class="path-step-label" style="color:${color}">${pos.type}</div>
+          </div>
+        </div>`;
+      });
+    } else if(chainState.length % 2 === 1){
+      // Pick next technique from current position
+      const currentPos = chainState[chainState.length - 1];
+      const available = edges.filter(e => e.from === currentPos.id);
+
+      if(available.length === 0){
+        html += '<div style="padding:20px;text-align:center;color:var(--text-muted)">No techniques from this position</div>';
+      } else {
+        html += '<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Pick next technique:</div>';
+        const byType = {submission:[], sweep:[], transition:[]};
+        available.forEach(e => { if(byType[e.type]) byType[e.type].push(e); });
+
+        Object.entries(byType).forEach(([type, arr]) => {
+          if(arr.length === 0) return;
+          const color = EDGE_COLORS[type];
+          html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:${color};margin:8px 0 4px">${type}s</div>`;
+          arr.forEach(e => {
+            const dest = positions.find(p => p.id === e.to);
+            html += `<div class="path-step" style="cursor:pointer" onclick="window._chainAddEdge('${e.to}','${e.label.replace(/'/g,"\\'")}','${e.type}')">
+              <div class="path-step-left">
+                <div class="path-step-name" style="color:${color}">${e.label}</div>
+                <div class="path-step-label">→ ${dest ? dest.name : e.to}</div>
+              </div>
+              <span style="color:var(--text-muted)">→</span>
+            </div>`;
+          });
+        });
+      }
+    }
+
+    html += '</div>'; // close scrollable area
+
+    // Action buttons — fixed footer outside scroll
+    html += '<div style="display:flex;justify-content:space-between;gap:8px;padding:12px 20px;border-top:1px solid var(--border);flex-shrink:0">';
+    if(chainState.length > 0){
+      html += `<button class="add-btn" onclick="window._chainUndo()">← Undo</button>`;
+    }
+    if(chainState.length >= 3){
+      html += `<button class="add-btn" onclick="window._chainSave(${roundIdx})" style="margin-left:auto;background:var(--primary);color:white;border-color:var(--primary);font-size:14px;padding:12px 24px">✓ Done</button>`;
+    }
+    html += '</div>';
+
+    html += '</div>'; // close move-selector-content
+    modal.innerHTML = html;
+  }
+
+  window._chainAddPos = function(posId){
+    const pos = positions.find(p => p.id === posId);
+    if(pos) chainState.push({id:pos.id, name:pos.name, type:pos.type});
+    renderChainModal();
+  };
+
+  window._chainAddEdge = function(toId, label, type){
+    chainState.push({label:label, type:type});
+    const pos = positions.find(p => p.id === toId);
+    if(pos) chainState.push({id:pos.id, name:pos.name, type:pos.type});
+    renderChainModal();
+  };
+
+  window._chainUndo = function(){
+    if(chainState.length > 1){ chainState.pop(); chainState.pop(); }
+    else { chainState = []; }
+    renderChainModal();
+  };
+
+  window._chainSave = function(rIdx){
+    if(editingEntry && editingEntry.rounds[rIdx]){
+      editingEntry.rounds[rIdx].chain = [...chainState];
+      saveJournalEntry();
+      renderJournalEntry();
+    }
+    document.querySelector('.move-selector-modal.chain-modal')?.remove();
+  };
+
+  renderChainModal();
+}
+
+// ═══════════════════════════════════════════════
+//  ME / PROFILE SECTION
+// ═══════════════════════════════════════════════
+let myProfile = JSON.parse(localStorage.getItem('bjj_profile') || 'null') || {
+  name: '',
+  belt: 'white',
+  stripes: 0,
+  useStripes: true,
+  startDate: '',
+  blackBeltDegree: 0,
+  blackBeltPromoDate: '',
+  promotions: [],
+  injuries: []
+};
+// Backfill for existing profiles missing new fields
+if(!myProfile.promotions) myProfile.promotions = [];
+if(!myProfile.injuries) myProfile.injuries = [];
+
+// Black belt degree system (IBJJF):
+// 1st-3rd degree: minimum 3 years each
+// 4th-6th degree: minimum 5 years each (Coral belt at 7th)
+const BLACK_BELT_DEGREES = [
+  {deg:0, title:'Black Belt', minYears:0},
+  {deg:1, title:'1st Degree', minYears:3},
+  {deg:2, title:'2nd Degree', minYears:3},
+  {deg:3, title:'3rd Degree', minYears:3},
+  {deg:4, title:'4th Degree', minYears:5},
+  {deg:5, title:'5th Degree', minYears:5},
+  {deg:6, title:'6th Degree', minYears:5},
+  {deg:7, title:'Coral Belt (7th)', minYears:7},
+  {deg:8, title:'Coral Belt (8th)', minYears:7},
+  {deg:9, title:'Red Belt (9th)', minYears:10},
+  {deg:10, title:'Red Belt (10th)', minYears:0}
+];
+
+const BELT_ORDER = ['white','blue','purple','brown','black'];
+const BELT_HEX = {white:'#F5F0E8',blue:'#1A5FB4',purple:'#6B3FA0',brown:'#7B4B2A',black:'#2C2C2C'};
+
+function saveProfile(){
+  localStorage.setItem('bjj_profile', JSON.stringify(myProfile));
+}
+
+function openMe(){
+  document.getElementById('meOverlay').classList.add('open');
+  renderMe();
+}
+
+function closeMe(){
+  document.getElementById('meOverlay').classList.remove('open');
+}
+
+function renderMe(){
+  const body = document.getElementById('meBody');
+  let html = '';
+
+  // Session stats from journal
+  const totalSessions = journalEntries.length;
+  const totalRounds = journalEntries.reduce((sum, e) => sum + (e.rounds?.length || 0), 0);
+  const sessionsAtBelt = {};
+  BELT_ORDER.forEach(b => { sessionsAtBelt[b] = 0; });
+  // Count sessions — we'll use journal dates vs promotion tracking
+  // For now count all sessions under current belt
+
+  // Belt display
+  const beltColor = BELT_HEX[myProfile.belt] || '#CCC';
+  const isBlack = myProfile.belt === 'black';
+
+  // Big belt visual
+  html += '<div style="text-align:center;padding:20px 0">';
+  html += `<div style="margin:0 auto 16px;width:200px;position:relative">`;
+  // Belt shape
+  html += `<div style="width:200px;height:40px;border-radius:4px;background:${beltColor};margin:0 auto;position:relative;border:${myProfile.belt==='white'?'2px solid #CCC':'none'};box-shadow:0 2px 8px rgba(0,0,0,0.15)">`;
+  // Knot in center
+  html += `<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:${beltColor};border:2px solid ${myProfile.belt==='white'?'#CCC':'rgba(0,0,0,0.2)'};z-index:1"></div>`;
+  // Stripe area (right side of belt)
+  if(myProfile.useStripes && !isBlack){
+    html += '<div style="position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;gap:3px">';
+    for(let s=0; s<4; s++){
+      const filled = s < myProfile.stripes;
+      html += `<div style="width:4px;height:24px;border-radius:1px;background:${filled?'#F5F0E8':'rgba(255,255,255,0.3)'};${filled?'box-shadow:0 0 3px rgba(0,0,0,0.3)':''}"></div>`;
+    }
+    html += '</div>';
+  }
+  if(isBlack){
+    // Black belt: show degree bar on the red tab
+    html += `<div style="position:absolute;right:8px;top:4px;bottom:4px;width:40px;background:#B5352A;border-radius:2px;display:flex;align-items:center;justify-content:center">`;
+    if(myProfile.blackBeltDegree > 0){
+      html += `<span style="color:white;font-size:10px;font-weight:700">${myProfile.blackBeltDegree}°</span>`;
+    }
+    html += `</div>`;
+  }
+  html += '</div>'; // close belt
+  html += '</div>'; // close belt container
+
+  // Belt label
+  const beltLabel = isBlack && myProfile.blackBeltDegree > 0
+    ? BLACK_BELT_DEGREES[myProfile.blackBeltDegree]?.title || `${myProfile.blackBeltDegree}° Black Belt`
+    : myProfile.belt.charAt(0).toUpperCase() + myProfile.belt.slice(1) + ' Belt';
+  html += `<div style="font-size:20px;font-weight:700;color:var(--text-primary)">${beltLabel}</div>`;
+  if(myProfile.useStripes && !isBlack){
+    html += `<div style="font-size:14px;color:var(--text-muted);margin-top:4px">${myProfile.stripes} stripe${myProfile.stripes!==1?'s':''}</div>`;
+  }
+  html += '</div>'; // close text-align center
+
+  // Stats row
+  html += `<div style="display:flex;gap:12px;margin-bottom:20px">
+    <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+      <div style="font-size:28px;font-weight:700;color:var(--primary)">${totalSessions}</div>
+      <div style="font-size:11px;color:var(--text-muted);font-weight:600">Sessions</div>
+    </div>
+    <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+      <div style="font-size:28px;font-weight:700;color:var(--sweep)">${totalRounds}</div>
+      <div style="font-size:11px;color:var(--text-muted);font-weight:600">Rounds</div>
+    </div>
+    <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+      <div style="font-size:28px;font-weight:700;color:var(--sub)">${countAllSubs('got')}</div>
+      <div style="font-size:11px;color:var(--text-muted);font-weight:600">Subs Got</div>
+    </div>
+  </div>`;
+
+  // Belt rank controls
+  html += '<div class="journal-section">';
+  html += '<div class="journal-section-title">Current Rank</div>';
+
+  // Belt selector
+  html += '<div style="display:flex;gap:8px;margin-bottom:16px">';
+  BELT_ORDER.forEach(b => {
+    const sel = myProfile.belt === b;
+    const col = BELT_HEX[b];
+    html += `<div onclick="myProfile.belt='${b}';myProfile.stripes=0;myProfile.blackBeltDegree=0;saveProfile();renderMe()" style="cursor:pointer;flex:1;text-align:center;padding:10px 4px;border-radius:10px;border:2px solid ${sel?col:'transparent'};background:${sel?col+'18':'var(--bg)'}">
+      <div style="width:100%;height:10px;border-radius:3px;background:${col};margin-bottom:6px;border:${b==='white'?'1px solid #CCC':'none'}"></div>
+      <span style="font-size:10px;color:${sel?col:'var(--text-muted)'};font-weight:${sel?'700':'500'};text-transform:capitalize">${b}</span>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Stripes (non-black)
+  if(!isBlack){
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span style="font-size:13px;font-weight:600;color:var(--text-primary)">Stripes</span>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);cursor:pointer">
+        <input type="checkbox" ${myProfile.useStripes?'checked':''} onchange="myProfile.useStripes=this.checked;saveProfile();renderMe()"> Use stripes
+      </label>
+    </div>`;
+
+    if(myProfile.useStripes){
+      html += '<div style="display:flex;gap:8px;margin-bottom:12px">';
+      for(let s=0; s<=4; s++){
+        const sel = myProfile.stripes === s;
+        html += `<div onclick="myProfile.stripes=${s};saveProfile();renderMe()" style="cursor:pointer;flex:1;text-align:center;padding:10px;border-radius:10px;border:2px solid ${sel?'var(--primary)':'var(--border)'};background:${sel?'var(--primary)11':'var(--bg)'}">
+          <div style="font-size:18px;font-weight:700;color:${sel?'var(--primary)':'var(--text-muted)'}">${s}</div>
+        </div>`;
+      }
+      html += '</div>';
+    }
+
+    // Promotion button
+    if(myProfile.stripes >= 4 || !myProfile.useStripes){
+      const nextBelt = BELT_ORDER[BELT_ORDER.indexOf(myProfile.belt) + 1];
+      if(nextBelt){
+        html += `<button class="add-btn" onclick="promoteToBelt('${nextBelt}')" style="width:100%;justify-content:center;background:${BELT_HEX[nextBelt]};color:${nextBelt==='black'||nextBelt==='brown'||nextBelt==='blue'||nextBelt==='purple'?'white':'#333'};border-color:${BELT_HEX[nextBelt]};font-size:14px;padding:12px">
+          Promote to ${nextBelt.charAt(0).toUpperCase()+nextBelt.slice(1)} Belt
+        </button>`;
+      }
+    }
+  }
+
+  // Black belt degree system
+  if(isBlack){
+    html += '<div style="margin-top:8px">';
+    html += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:10px">Degree</div>';
+
+    // Degree selector
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">';
+    for(let d=0; d<=6; d++){
+      const sel = myProfile.blackBeltDegree === d;
+      const info = BLACK_BELT_DEGREES[d];
+      html += `<div onclick="myProfile.blackBeltDegree=${d};saveProfile();renderMe()" style="cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid ${sel?'var(--sub)':'var(--border)'};background:${sel?'var(--sub)11':'var(--bg)'}">
+        <div style="font-size:14px;font-weight:700;color:${sel?'var(--sub)':'var(--text-muted)'}">${d === 0 ? 'Fresh' : d+'°'}</div>
+      </div>`;
+    }
+    html += '</div>';
+
+    // Current degree info
+    const deg = BLACK_BELT_DEGREES[myProfile.blackBeltDegree];
+    if(deg){
+      html += `<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px">
+        <div style="font-size:14px;font-weight:600;color:var(--text-primary)">${deg.title}</div>`;
+      if(myProfile.blackBeltDegree < 6){
+        const next = BLACK_BELT_DEGREES[myProfile.blackBeltDegree + 1];
+        html += `<div style="font-size:12px;color:var(--text-muted);margin-top:4px">Next: ${next.title} (min ${next.minYears} years at current degree)</div>`;
+      }
+      html += '</div>';
+    }
+
+    // Higher ranks info
+    html += `<div style="margin-top:16px;font-size:12px;color:var(--text-muted);line-height:1.6">
+      <div style="font-weight:600;margin-bottom:4px;color:var(--text-primary)">Black Belt Progression (IBJJF)</div>
+      <div>1st–3rd Degree: 3 years min each</div>
+      <div>4th–6th Degree: 5 years min each</div>
+      <div>7th Degree: Coral Belt (red/black) — 7 years</div>
+      <div>8th Degree: Coral Belt (red/white) — 7 years</div>
+      <div>9th Degree: Red Belt — 10 years</div>
+      <div>10th Degree: Red Belt — Grand Master</div>
+    </div>`;
+    html += '</div>';
+  }
+
+  html += '</div>'; // close journal-section
+
+  // Training start date
+  html += '<div class="journal-section">';
+  html += '<div class="journal-section-title">Training Since</div>';
+  html += `<div class="journal-field">
+    <input type="date" value="${myProfile.startDate}" onchange="myProfile.startDate=this.value;saveProfile();renderMe()" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-primary);font-size:14px;box-sizing:border-box">
+  </div>`;
+  if(myProfile.startDate){
+    const start = new Date(myProfile.startDate);
+    const now = new Date();
+    const diffMs = now - start;
+    const years = Math.floor(diffMs / (365.25 * 24 * 60 * 60 * 1000));
+    const months = Math.floor((diffMs % (365.25 * 24 * 60 * 60 * 1000)) / (30.44 * 24 * 60 * 60 * 1000));
+    html += `<div style="font-size:14px;color:var(--primary);font-weight:600;margin-top:8px">${years > 0 ? years + ' year'+(years!==1?'s':'') + ', ' : ''}${months} month${months!==1?'s':''} on the mats</div>`;
+  }
+  html += '</div>';
+
+  // Promotion history
+  html += '<div class="journal-section">';
+  html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div class="journal-section-title" style="margin-bottom:0">Promotion History</div>
+    <button class="add-btn" onclick="addPromotion()" style="padding:4px 12px;font-size:11px">+ Add</button>
+  </div>`;
+
+  if(myProfile.promotions.length === 0){
+    html += '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">No promotions logged yet</div>';
+  } else {
+    // Show newest first
+    [...myProfile.promotions].reverse().forEach((promo, i) => {
+      const ridx = myProfile.promotions.length - 1 - i;
+      const pCol = BELT_HEX[promo.belt] || 'var(--border)';
+      const promoDate = promo.date ? new Date(promo.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'No date';
+      // Time at this belt
+      let timeAtBelt = '';
+      if(promo.date){
+        const nextPromo = myProfile.promotions[ridx + 1];
+        const endDate = nextPromo?.date ? new Date(nextPromo.date) : new Date();
+        const diffMs = endDate - new Date(promo.date);
+        const yrs = Math.floor(diffMs / (365.25*24*60*60*1000));
+        const mos = Math.floor((diffMs % (365.25*24*60*60*1000)) / (30.44*24*60*60*1000));
+        timeAtBelt = yrs > 0 ? yrs+'y '+mos+'m' : mos+'m';
+      }
+      html += `<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border:1px solid var(--border);border-left:4px solid ${pCol};border-radius:10px;margin-bottom:6px">
+        <div style="width:32px;height:10px;border-radius:2px;background:${pCol};flex-shrink:0;border:${promo.belt==='white'?'1px solid #CCC':'none'}"></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary)">${promo.belt.charAt(0).toUpperCase()+promo.belt.slice(1)} Belt${promo.stripes?' ('+promo.stripes+' stripe'+(promo.stripes!==1?'s':'')+')':''}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${promoDate}${timeAtBelt ? ' · '+timeAtBelt : ''}</div>
+        </div>
+        <span onclick="myProfile.promotions.splice(${ridx},1);saveProfile();renderMe()" style="cursor:pointer;color:var(--text-muted);font-size:16px">×</span>
+      </div>`;
+    });
+  }
+  html += '</div>';
+
+  // Injury tracking
+  html += '<div class="journal-section">';
+  html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div class="journal-section-title" style="margin-bottom:0">Injuries</div>
+    <button class="add-btn" onclick="addInjury()" style="padding:4px 12px;font-size:11px">+ Add</button>
+  </div>`;
+
+  const activeInjuries = myProfile.injuries.filter(inj => !inj.resolved);
+  const pastInjuries = myProfile.injuries.filter(inj => inj.resolved);
+
+  if(activeInjuries.length > 0){
+    html += '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--sub);margin-bottom:6px">Active</div>';
+    activeInjuries.forEach(inj => {
+      const injIdx = myProfile.injuries.indexOf(inj);
+      const daysSince = inj.date ? Math.floor((new Date() - new Date(inj.date)) / (24*60*60*1000)) : 0;
+      const injDateFmt = inj.date ? new Date(inj.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+      html += `<div style="padding:12px;background:#B5352A08;border:1px solid #B5352A33;border-radius:10px;margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600;color:var(--sub)">${inj.bodyPart || 'Injury'}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${inj.description || ''}</div>
+            <div style="display:flex;gap:12px;margin-top:6px">
+              <div style="font-size:11px"><span style="color:var(--sub);font-weight:600">Injured:</span> <span style="color:var(--text-muted)">${injDateFmt}</span></div>
+              <div style="font-size:11px;color:var(--text-muted)">${daysSince} days out</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <span onclick="markHealed(${injIdx})" style="cursor:pointer;font-size:11px;color:var(--sweep);font-weight:600;padding:4px 8px;border:1px solid var(--sweep);border-radius:6px">Returned</span>
+            <span onclick="myProfile.injuries.splice(${injIdx},1);saveProfile();renderMe()" style="cursor:pointer;color:var(--text-muted);font-size:16px">×</span>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+
+  if(pastInjuries.length > 0){
+    html += '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin:12px 0 6px">Past</div>';
+    pastInjuries.forEach(inj => {
+      const injIdx = myProfile.injuries.indexOf(inj);
+      const recoveryDays = inj.date && inj.resolvedDate ? Math.floor((new Date(inj.resolvedDate) - new Date(inj.date)) / (24*60*60*1000)) : 0;
+      const injD = inj.date ? new Date(inj.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+      const retD = inj.resolvedDate ? new Date(inj.resolvedDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+      html += `<div style="padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;opacity:0.7">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:12px;font-weight:600;color:var(--text-primary)">${inj.bodyPart || 'Injury'}</div>
+          <span onclick="myProfile.injuries.splice(${injIdx},1);saveProfile();renderMe()" style="cursor:pointer;color:var(--text-muted);font-size:14px">×</span>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:4px;font-size:11px">
+          <div><span style="color:var(--sub);font-weight:600">Injured:</span> <span style="color:var(--text-muted)">${injD}</span></div>
+          <div><span style="color:var(--sweep);font-weight:600">Returned:</span> <span style="color:var(--text-muted)">${retD}</span></div>
+          <div style="color:var(--text-muted)">${recoveryDays}d recovery</div>
+        </div>
+      </div>`;
+    });
+  }
+
+  if(myProfile.injuries.length === 0){
+    html += '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">No injuries logged — stay healthy!</div>';
+  }
+  html += '</div>';
+
+  // Opponent leaderboard
+  const oppStats = getAllOpponentStats();
+  if(oppStats.length > 0){
+    html += '<div class="journal-section">';
+    html += '<div class="journal-section-title">Training Partners</div>';
+    oppStats.forEach(opp => {
+      const bCol = BELT_HEX[opp.belt] || 'var(--border)';
+      html += `<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:6px">
+        <div style="width:28px;height:8px;border-radius:2px;background:${bCol};flex-shrink:0;border:${opp.belt==='white'?'1px solid #CCC':'none'}"></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary)">${opp.name}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${opp.rounds} round${opp.rounds!==1?'s':''}</div>
+        </div>
+        <div style="text-align:right">
+          <span style="font-size:11px;font-weight:600;color:var(--sweep)">${opp.got} got</span>
+          <span style="font-size:11px;color:var(--text-muted);margin:0 4px">·</span>
+          <span style="font-size:11px;font-weight:600;color:var(--sub)">${opp.gave} gave</span>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  body.innerHTML = html;
+}
+
+function getGoalInsights(goal){
+  const insights = [];
+  const name = goal.name;
+  const type = goal.goalType;
+
+  if(type === 'submission'){
+    const subEdge = edges.find(e => e.type === 'submission' && e.label === name);
+    if(subEdge){
+      const fromPos = positions.find(p => p.id === subEdge.from);
+      const entryEdges = edges.filter(e => e.to === subEdge.from && e.type === 'transition');
+      const entryNames = entryEdges.slice(0,3).map(e => {
+        const src = positions.find(p => p.id === e.from);
+        return src ? e.label + ' from ' + src.name : e.label;
+      });
+
+      if(fromPos){
+        insights.push({
+          icon: '🎯',
+          title: 'Set it up from ' + fromPos.name,
+          detail: 'Drill getting to ' + fromPos.name + ' first. The sub is only as good as your positional control.'
+        });
+      }
+
+      if(entryNames.length > 0){
+        insights.push({
+          icon: '🔗',
+          title: 'Chain into it',
+          detail: 'Entry paths: ' + entryNames.join(', ') + '. Build a sequence that flows into the finish.'
+        });
+      }
+
+      const altSubs = edges.filter(e => e.from === subEdge.from && e.type === 'submission' && e.label !== name);
+      if(altSubs.length > 0){
+        insights.push({
+          icon: '🔄',
+          title: 'Create dilemmas',
+          detail: 'Also threaten ' + altSubs.slice(0,3).map(e=>e.label).join(', ') + ' from the same spot. If they defend one, hit the other.'
+        });
+      }
+    }
+    insights.push({
+      icon: '⏱️',
+      title: 'Control before you submit',
+      detail: 'Hold the position for 5 seconds before attacking. Rushing the sub gives them escape windows.'
+    });
+
+  } else if(type === 'sweep'){
+    const sweepEdge = edges.find(e => e.type === 'sweep' && e.label === name);
+    if(sweepEdge){
+      const fromPos = positions.find(p => p.id === sweepEdge.from);
+      const toPos = positions.find(p => p.id === sweepEdge.to);
+
+      if(fromPos){
+        insights.push({
+          icon: '🎯',
+          title: 'Start from strong grips',
+          detail: 'In ' + fromPos.name + ', establish your grips before initiating. The sweep starts with hand fighting.'
+        });
+      }
+      if(toPos){
+        const followUps = edges.filter(e => e.from === sweepEdge.to).slice(0,3);
+        if(followUps.length > 0){
+          insights.push({
+            icon: '⬆️',
+            title: 'Land in ' + toPos.name + ' — then attack',
+            detail: 'Follow up with: ' + followUps.map(e=>e.label).join(', ') + ". Don't just sweep and stall."
+          });
+        }
+      }
+      const altSweeps = edges.filter(e => e.from === sweepEdge.from && e.type === 'sweep' && e.label !== name);
+      if(altSweeps.length > 0){
+        insights.push({
+          icon: '🔄',
+          title: 'Combo sweeps',
+          detail: 'If they base out, switch to ' + altSweeps.slice(0,2).map(e=>e.label).join(' or ') + '. Make them pick their poison.'
+        });
+      }
+    }
+    insights.push({
+      icon: '💡',
+      title: 'Off-balance first',
+      detail: 'Push-pull to break their base before you commit. A sweep against a balanced opponent will stall.'
+    });
+
+  } else if(type === 'position'){
+    const pos = positions.find(p => p.name === name);
+    if(pos){
+      const entries = edges.filter(e => e.to === pos.id && e.type === 'transition');
+      const attacks = edges.filter(e => e.from === pos.id && e.type === 'submission');
+
+      if(entries.length > 0){
+        insights.push({
+          icon: '🚪',
+          title: 'Ways in',
+          detail: entries.slice(0,4).map(e => {
+            const src = positions.find(p => p.id === e.from);
+            return e.label + (src ? ' (from '+src.name+')' : '');
+          }).join(', ')
+        });
+      }
+      if(attacks.length > 0){
+        insights.push({
+          icon: '⚔️',
+          title: 'Attacks from here',
+          detail: attacks.map(e=>e.label).join(', ') + '. Cycle through these to keep them reacting.'
+        });
+      }
+      const isTop = pos.type === 'top' || pos.type === 'back';
+      insights.push({
+        icon: '🧱',
+        title: isTop ? 'Maintain pressure' : 'Control the distance',
+        detail: isTop
+          ? 'Focus on holding the position 30+ seconds before attacking. Pressure makes them give up subs.'
+          : 'Keep frames active and manage grips. Re-guard or attack from a strong structure.'
+      });
+    }
+
+  } else if(type === 'transition'){
+    const transEdge = edges.find(e => e.type === 'transition' && e.label === name);
+    if(transEdge){
+      const fromPos = positions.find(p => p.id === transEdge.from);
+      const toPos = positions.find(p => p.id === transEdge.to);
+      if(fromPos && toPos){
+        insights.push({
+          icon: '🎯',
+          title: fromPos.name + ' → ' + toPos.name,
+          detail: 'Drill the entry. Speed and timing matter more than strength on transitions.'
+        });
+        const toAttacks = edges.filter(e => e.from === transEdge.to && e.type === 'submission');
+        if(toAttacks.length > 0){
+          insights.push({
+            icon: '⚔️',
+            title: 'Attack immediately on arrival',
+            detail: 'Once in ' + toPos.name + ', go for ' + toAttacks.slice(0,3).map(e=>e.label).join(', ') + ' before they settle.'
+          });
+        }
+      }
+    }
+    insights.push({
+      icon: '💡',
+      title: 'Drill in reps',
+      detail: "Transitions are about muscle memory. Do 20 reps each side during warmups until it's automatic."
+    });
+
+  } else {
+    insights.push({
+      icon: '📋',
+      title: 'Break it down',
+      detail: 'Identify the 2-3 key movements that make this work. Isolate and drill each one separately.'
+    });
+    insights.push({
+      icon: '🎥',
+      title: 'Study footage',
+      detail: 'Watch high-level competitors use this technique. Note their grip placement and timing.'
+    });
+  }
+
+  return insights;
+}
+
+function promoteToBelt(nextBelt){
+  if(confirm('Promote to '+nextBelt+' belt?')){
+    myProfile.promotions.push({
+      belt: nextBelt,
+      date: new Date().toISOString().split('T')[0],
+      stripes: 0
+    });
+    myProfile.belt = nextBelt;
+    myProfile.stripes = 0;
+    saveProfile();
+    renderMe();
+  }
+}
+
+function addPromotion(){
+  const body = document.getElementById('meBody');
+  let html = '<div class="journal-section">';
+  html += '<div class="journal-section-title">Log Promotion</div>';
+
+  html += '<div class="journal-field"><label>Belt</label><select id="promoBelt">';
+  BELT_ORDER.forEach(b => { html += `<option value="${b}">${b.charAt(0).toUpperCase()+b.slice(1)}</option>`; });
+  html += '</select></div>';
+
+  html += '<div class="journal-field"><label>Stripes (optional)</label><select id="promoStripes">';
+  for(let s=0; s<=4; s++) html += `<option value="${s}">${s}</option>`;
+  html += '</select></div>';
+
+  html += `<div class="journal-field"><label>Date</label>
+    <input type="date" id="promoDate" value="${new Date().toISOString().split('T')[0]}">
+  </div>`;
+
+  html += `<div style="display:flex;gap:8px;margin-top:16px">
+    <button class="add-btn" onclick="renderMe()" style="flex:1">Cancel</button>
+    <button class="add-btn" onclick="savePromotion()" style="flex:1;background:var(--primary);color:white;border-color:var(--primary)">Save</button>
+  </div>`;
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+function savePromotion(){
+  const belt = document.getElementById('promoBelt').value;
+  const stripes = parseInt(document.getElementById('promoStripes').value) || 0;
+  const date = document.getElementById('promoDate').value;
+  myProfile.promotions.push({belt, stripes, date});
+  myProfile.promotions.sort((a,b) => (a.date||'').localeCompare(b.date||''));
+  saveProfile();
+  renderMe();
+}
+
+function addInjury(){
+  const body = document.getElementById('meBody');
+  let html = '<div class="journal-section">';
+  html += '<div class="journal-section-title">Log Injury</div>';
+
+  html += `<div class="journal-field"><label>Body Part</label>
+    <select id="injuryPart">
+      <option value="Neck">Neck</option>
+      <option value="Shoulder">Shoulder</option>
+      <option value="Elbow">Elbow</option>
+      <option value="Wrist/Hand">Wrist/Hand</option>
+      <option value="Ribs">Ribs</option>
+      <option value="Lower Back">Lower Back</option>
+      <option value="Hip">Hip</option>
+      <option value="Knee">Knee</option>
+      <option value="Ankle/Foot">Ankle/Foot</option>
+      <option value="Fingers/Toes">Fingers/Toes</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>`;
+
+  html += `<div class="journal-field"><label>What happened?</label>
+    <input type="text" id="injuryDesc" placeholder="e.g., Tweaked knee during scramble">
+  </div>`;
+
+  html += `<div class="journal-field"><label>Date</label>
+    <input type="date" id="injuryDate" value="${new Date().toISOString().split('T')[0]}">
+  </div>`;
+
+  html += `<div style="display:flex;gap:8px;margin-top:16px">
+    <button class="add-btn" onclick="renderMe()" style="flex:1">Cancel</button>
+    <button class="add-btn" onclick="saveInjury()" style="flex:1;background:var(--sub);color:white;border-color:var(--sub)">Save</button>
+  </div>`;
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+function saveInjury(){
+  const bodyPart = document.getElementById('injuryPart').value;
+  const description = document.getElementById('injuryDesc').value;
+  const date = document.getElementById('injuryDate').value;
+  myProfile.injuries.push({bodyPart, description, date, resolved:false, resolvedDate:''});
+  saveProfile();
+  renderMe();
+}
+
+function markHealed(injIdx){
+  const body = document.getElementById('meBody');
+  const inj = myProfile.injuries[injIdx];
+  let html = '<div class="journal-section">';
+  html += '<div class="journal-section-title">Return Date</div>';
+  html += `<div style="font-size:13px;color:var(--text-primary);margin-bottom:12px">${inj.bodyPart} — ${inj.description || ''}</div>`;
+  html += `<div class="journal-field"><label>When did you return to training?</label>
+    <input type="date" id="returnDate" value="${new Date().toISOString().split('T')[0]}">
+  </div>`;
+  html += `<div style="display:flex;gap:8px;margin-top:16px">
+    <button class="add-btn" onclick="renderMe()" style="flex:1">Cancel</button>
+    <button class="add-btn" onclick="myProfile.injuries[${injIdx}].resolved=true;myProfile.injuries[${injIdx}].resolvedDate=document.getElementById('returnDate').value;saveProfile();renderMe()" style="flex:1;background:var(--sweep);color:white;border-color:var(--sweep)">Confirm Return</button>
+  </div>`;
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+function countAllSubs(direction){
+  let count = 0;
+  journalEntries.forEach(e => {
+    e.rounds?.forEach(r => {
+      r.submissions?.forEach(s => { if(s.direction === direction) count++; });
+    });
+  });
+  return count;
+}
+
+function getAllOpponentStats(){
+  const map = {};
+  journalEntries.forEach(entry => {
+    entry.rounds?.forEach(round => {
+      if(!round.opponent || !round.opponent.trim()) return;
+      const name = round.opponent.trim();
+      if(!map[name]) map[name] = {name, belt:round.belt||'', rounds:0, got:0, gave:0};
+      map[name].rounds++;
+      if(round.belt && !map[name].belt) map[name].belt = round.belt;
+      round.submissions?.forEach(sub => {
+        if(sub.direction === 'got') map[name].got++;
+        else if(sub.direction === 'gave') map[name].gave++;
+      });
+    });
+  });
+  return Object.values(map).sort((a,b) => b.rounds - a.rounds);
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+drawGraph();
+
+// Handle resize
+window.addEventListener('resize',()=>{
+  const nw=window.innerWidth, nh=window.innerHeight;
+  canvas.width=nw*dpr; canvas.height=nh*dpr;
+  canvas.style.width=nw+'px'; canvas.style.height=nh+'px';
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(dpr,dpr);
+  drawGraph();
+});
+</script>
+</body>
+</html>
