@@ -170,6 +170,7 @@ canvas { display:block; }
   transform:translateY(100%);
   transition:transform 0.4s cubic-bezier(0.32,0.72,0,1);
   overflow:hidden;
+  display:flex; flex-direction:column;
 }
 .focus-overlay.open { transform:translateY(0); }
 .focus-header {
@@ -1858,8 +1859,8 @@ function drawFocusView(){
   const targetIds=[...new Set(connected.map(e=>perspective==='top'?e.to:e.from))];
   const targets=targetIds.map(id=>positions.find(p=>p.id===id)).filter(Boolean);
 
-  // Radial layout
-  const radius=Math.min(fw,fh)*0.32;
+  // Radial layout — use 40% of the smaller dimension for a larger orbit on mobile
+  const radius=Math.min(fw,fh)*0.40;
   const targetPositions=targets.map((t,i)=>{
     const angle=(i/targets.length)*Math.PI*2 - Math.PI/2;
     return {node:t, x:cx+Math.cos(angle)*radius, y:cy+Math.sin(angle)*radius};
