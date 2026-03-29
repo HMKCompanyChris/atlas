@@ -2077,7 +2077,20 @@ function openDetailFromFocus(){
 // ═══════════════════════════════════════════════
 //  DETAIL PANEL
 // ═══════════════════════════════════════════════
+let _detailTab = 'details';
+
+function setDetailTab(tab){
+  _detailTab = tab;
+  document.querySelectorAll('#detailContent .detail-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  document.querySelectorAll('#detailContent .detail-tab-pane').forEach(pane => {
+    pane.style.display = pane.dataset.tab === tab ? '' : 'none';
+  });
+}
+
 function openDetail(node){
+  _detailTab = 'details';
   const panel=document.getElementById('detailPanel');
   const content=document.getElementById('detailContent');
   const color=TYPES[node.type];
@@ -2090,6 +2103,7 @@ function openDetail(node){
 
   const isSaved = selectedPositions.has(node.id);
 
+  // ── Header (always visible) ──
   let html=`
     <button onclick="closeDetail()" style="position:sticky;top:0;right:0;float:right;width:32px;height:32px;border-radius:16px;border:none;background:#F0EBE3;color:#6B5744;font-size:16px;cursor:pointer;z-index:10;margin:-4px -4px 0 0">✕</button>
     <div class="detail-badge" style="background:${color}15;color:${color}">
@@ -2103,6 +2117,16 @@ function openDetail(node){
     </button>
   `;
 
+  // ── Tab bar ──
+  const transCount = subs.length + sweeps.length + trans.length;
+  html += `<div class="tab-bar" style="margin-top:12px">
+    <button class="tab-btn detail-tab-btn active" data-tab="details" onclick="setDetailTab('details')">Details</button>
+    <button class="tab-btn detail-tab-btn" data-tab="transitions" onclick="setDetailTab('transitions')">Transitions${transCount ? ` (${transCount})` : ''}</button>
+  </div>`;
+
+  // ── Details pane ──
+  html += `<div class="detail-tab-pane" data-tab="details">`;
+
   if(node.details && node.details.length){
     html+=`<div class="detail-section"><div class="detail-section-title">Key Details</div>`;
     node.details.forEach(d=>{
@@ -2110,6 +2134,31 @@ function openDetail(node){
     });
     html+=`</div>`;
   }
+
+  if(node.mistakes && node.mistakes.length){
+    html+=`<div class="detail-section"><div class="detail-section-title">Common Mistakes</div>`;
+    node.mistakes.forEach(m=>{
+      html+=`<div class="detail-mistake"><div class="detail-mistake-text">⚠ ${m}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+
+  const videos = POSITION_VIDEOS[node.id];
+  if(videos && videos.length){
+    html+=`<div class="detail-videos"><h4>📹 Watch &amp; Learn</h4>`;
+    videos.forEach(v=>{
+      html+=`<a href="${v.url}" target="_blank" rel="noopener" class="video-link">
+        <span class="video-title">${v.title}</span>
+        <span class="video-channel">${v.channel}</span>
+      </a>`;
+    });
+    html+=`</div>`;
+  }
+
+  html += `</div>`; // end details pane
+
+  // ── Transitions pane ──
+  html += `<div class="detail-tab-pane" data-tab="transitions" style="display:none">`;
 
   if(subs.length){
     html+=`<div class="detail-section"><div class="detail-section-title">Submissions (${subs.length})</div>`;
@@ -2150,25 +2199,11 @@ function openDetail(node){
     html+=`</div>`;
   }
 
-  if(node.mistakes && node.mistakes.length){
-    html+=`<div class="detail-section"><div class="detail-section-title">Common Mistakes</div>`;
-    node.mistakes.forEach(m=>{
-      html+=`<div class="detail-mistake"><div class="detail-mistake-text">⚠ ${m}</div></div>`;
-    });
-    html+=`</div>`;
+  if(!transCount){
+    html+=`<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:24px 0">No transitions recorded for this position.</div>`;
   }
 
-  const videos = POSITION_VIDEOS[node.id];
-  if(videos && videos.length){
-    html+=`<div class="detail-videos"><h4>📹 Watch &amp; Learn</h4>`;
-    videos.forEach(v=>{
-      html+=`<a href="${v.url}" target="_blank" rel="noopener" class="video-link">
-        <span class="video-title">${v.title}</span>
-        <span class="video-channel">${v.channel}</span>
-      </a>`;
-    });
-    html+=`</div>`;
-  }
+  html += `</div>`; // end transitions pane
 
   content.innerHTML=html;
   panel.classList.add('open');
