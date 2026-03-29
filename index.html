@@ -753,7 +753,21 @@ canvas { display:block; }
 }
 #obGetStarted.visible { opacity:1; pointer-events:auto; }
 #obGetStarted:active { transform:scale(0.97); box-shadow:0 4px 16px rgba(196,87,42,0.4); }
+/* ─── FRIEND REQUEST BADGE ─── */
+.nav-item { position:relative; }
+.nav-badge {
+  position:absolute; top:4px; right:4px;
+  width:8px; height:8px;
+  background:var(--sub); border-radius:50%;
+  border:1.5px solid white; pointer-events:none;
+}
 </style>
+
+<!-- Firebase SDK (compat build) -->
+<!-- TODO: Replace with your Firebase project config from console.firebase.google.com -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -948,6 +962,50 @@ canvas { display:block; }
 </div>
 
 <script>
+// ═══════════════════════════════════════════════
+//  FIREBASE CONFIG & INIT
+// ═══════════════════════════════════════════════
+// TODO: Replace with your Firebase project config from console.firebase.google.com
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+let auth = null, db = null;
+let currentUser = null;
+let cloudUserData = null;
+let _meAuthTab = 'login';
+let _pendingRequests = [];
+let _friendsList = [];
+let _unameCheckTimer = null;
+let _searchTimer = null;
+
+(function initFirebase(){
+  if(firebaseConfig.apiKey === 'YOUR_API_KEY') return; // placeholder — skip init until configured
+  try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      if(user){
+        loadCloudProfile(user.uid);
+        mergeLocalToCloud(user.uid);
+      } else {
+        cloudUserData = null;
+        _pendingRequests = [];
+        _friendsList = [];
+        updateMeBadge();
+      }
+      if(document.getElementById('meOverlay')?.classList.contains('open')) renderMe();
+    });
+  } catch(e){ console.warn('Firebase init failed:', e); }
+})();
+
 // ═══════════════════════════════════════════════
 //  BJJ POSITIONAL ATLAS — DATA
 // ═══════════════════════════════════════════════
@@ -2836,6 +2894,9 @@ let myGame = new Set(JSON.parse(localStorage.getItem('bjj_mygame') || '[]'));
 
 function saveMyGame(){
   localStorage.setItem('bjj_mygame', JSON.stringify([...myGame]));
+  if(db && currentUser){
+    db.collection('users').doc(currentUser.uid).update({ myGame: [...myGame] }).catch(()=>{});
+  }
 }
 
 function toggleMyGame(id){
@@ -3238,6 +3299,9 @@ function saveJournalEntry(){
     journalEntries.push(copy);
   }
   localStorage.setItem('bjj_journal', JSON.stringify(journalEntries));
+  if(db && currentUser){
+    db.collection('users').doc(currentUser.uid).update({ journalEntries: journalEntries.slice(-100) }).catch(()=>{});
+  }
 }
 
 function getOpponentRecord(name){
@@ -3479,6 +3543,15 @@ function renderMe(){
   const body = document.getElementById('meBody');
   let html = '';
 
+  // ── AUTH / SOCIAL ──
+  if(!currentUser){
+    html += _buildAuthSection();
+  } else {
+    html += _buildUserCard();
+    html += _buildFriendsSection();
+  }
+
+  // ── LOCAL PROFILE ──
   // Session stats from journal
   const totalSessions = journalEntries.length;
   const totalRounds = journalEntries.reduce((sum, e) => sum + (e.rounds?.length || 0), 0);
@@ -4261,6 +4334,347 @@ drawGraph();
 
   goTo(0);
 })();
+
+// ═══════════════════════════════════════════════
+//  FIREBASE AUTH & SOCIAL SYSTEM
+// ═══════════════════════════════════════════════
+
+function updateMeBadge(){
+  const meBtn = document.querySelectorAll('.nav-item')[4];
+  if(!meBtn) return;
+  let badge = meBtn.querySelector('.nav-badge');
+  if(_pendingRequests.length > 0){
+    if(!badge){
+      badge = document.createElement('span');
+      badge.className = 'nav-badge';
+      meBtn.appendChild(badge);
+    }
+  } else {
+    if(badge) badge.remove();
+  }
+}
+
+// ── AUTH UI BUILDERS ──
+
+function showAuthTab(tab){
+  _meAuthTab = tab;
+  renderMe();
+}
+
+function _buildAuthSection(){
+  const is = 'width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-primary);font-size:14px;box-sizing:border-box;-webkit-appearance:none;font-family:inherit';
+  let html = `<div class="journal-section" style="text-align:center">`;
+  html += `<div style="font-size:22px;font-weight:800;color:var(--text-primary);margin-bottom:6px">Join BJJ Atlas</div>`;
+  html += `<div style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Sync your game to the cloud &amp; connect with training partners</div>`;
+  html += `<div style="display:flex;gap:8px;margin-bottom:16px">`;
+  html += `<button onclick="showAuthTab('login')" style="flex:1;padding:10px;border-radius:8px;border:2px solid ${_meAuthTab==='login'?'var(--accent)':'var(--border)'};background:${_meAuthTab==='login'?'var(--accent)':'var(--bg)'};color:${_meAuthTab==='login'?'white':'var(--text-muted)'};font-weight:600;cursor:pointer;font-size:13px">Log In</button>`;
+  html += `<button onclick="showAuthTab('signup')" style="flex:1;padding:10px;border-radius:8px;border:2px solid ${_meAuthTab==='signup'?'var(--accent)':'var(--border)'};background:${_meAuthTab==='signup'?'var(--accent)':'var(--bg)'};color:${_meAuthTab==='signup'?'white':'var(--text-muted)'};font-weight:600;cursor:pointer;font-size:13px">Sign Up</button>`;
+  html += `</div>`;
+  html += `<div id="authMsg" style="display:none;margin-bottom:10px;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:500;text-align:left"></div>`;
+  if(_meAuthTab === 'login'){
+    html += `<div class="journal-field" style="text-align:left"><label>Email</label><input type="email" id="authEmail" placeholder="your@email.com" style="${is}"></div>`;
+    html += `<div class="journal-field" style="text-align:left"><label>Password</label><input type="password" id="authPass" placeholder="Password" style="${is}" onkeydown="if(event.key==='Enter')doSignIn()"></div>`;
+    html += `<button onclick="doSignIn()" style="width:100%;padding:12px;background:var(--accent);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;font-family:inherit">Log In</button>`;
+  } else {
+    html += `<div class="journal-field" style="text-align:left"><label>Display Name</label><input type="text" id="suName" placeholder="How you appear to others" style="${is}"></div>`;
+    html += `<div class="journal-field" style="text-align:left"><label>Username <span style="color:var(--text-muted);font-size:11px;font-weight:400">(permanent — cannot be changed)</span></label><input type="text" id="suUsername" placeholder="e.g., bjj_mike" oninput="checkUsernameDebounce()" style="${is}" autocapitalize="none" autocorrect="off" spellcheck="false"><div id="unameStatus" style="font-size:11px;margin-top:4px;min-height:16px"></div></div>`;
+    html += `<div class="journal-field" style="text-align:left"><label>Email</label><input type="email" id="suEmail" placeholder="your@email.com" style="${is}"></div>`;
+    html += `<div class="journal-field" style="text-align:left"><label>Password</label><input type="password" id="suPass" placeholder="At least 6 characters" style="${is}" onkeydown="if(event.key==='Enter')doSignUp()"></div>`;
+    html += `<button onclick="doSignUp()" style="width:100%;padding:12px;background:var(--accent);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;font-family:inherit">Create Account</button>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function _buildUserCard(){
+  if(!cloudUserData) return '<div class="journal-section" style="text-align:center;color:var(--text-muted);font-size:13px">Loading profile…</div>';
+  const bc = BELT_HEX[cloudUserData.beltRank] || BELT_HEX.white;
+  const fi = (cloudUserData.displayName || cloudUserData.username || '?')[0].toUpperCase();
+  const is = 'width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-primary);font-size:14px;box-sizing:border-box;font-family:inherit';
+  let html = `<div class="journal-section">`;
+  html += `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">`;
+  html += `<div style="width:52px;height:52px;border-radius:50%;background:${bc}22;border:3px solid ${bc};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:${bc};flex-shrink:0">${fi}</div>`;
+  html += `<div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:700;color:var(--text-primary)">${cloudUserData.displayName||'Unnamed'}</div><div style="font-size:12px;color:var(--text-muted)">@${cloudUserData.username}</div></div>`;
+  html += `<button onclick="doSignOut()" style="flex-shrink:0;padding:6px 12px;background:var(--bg);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit">Sign Out</button>`;
+  html += `</div>`;
+  html += `<div class="journal-field"><label>Display Name</label><input type="text" value="${cloudUserData.displayName||''}" onchange="updateCloudProfile({displayName:this.value})" style="${is}"></div>`;
+  html += `<div class="journal-field"><label>Gym <span style="color:var(--text-muted);font-size:11px;font-weight:400">(optional)</span></label><input type="text" value="${cloudUserData.gym||''}" onchange="updateCloudProfile({gym:this.value})" placeholder="Your gym or academy" style="${is}"></div>`;
+  html += `<div class="journal-field"><label>Belt Rank</label><div style="display:flex;gap:6px">`;
+  BELT_ORDER.forEach(b => {
+    const sel = cloudUserData.beltRank === b, col = BELT_HEX[b];
+    html += `<div onclick="updateCloudProfile({beltRank:'${b}'})" style="cursor:pointer;flex:1;text-align:center;padding:8px 4px;border-radius:10px;border:2px solid ${sel?col:'var(--border)'};background:${sel?col+'18':'var(--bg)'}"><div style="width:100%;height:8px;border-radius:2px;background:${col};margin-bottom:4px;border:${b==='white'?'1px solid #CCC':'none'}"></div><span style="font-size:9px;color:${sel?col:'var(--text-muted)'};font-weight:${sel?'700':'500'};text-transform:capitalize">${b}</span></div>`;
+  });
+  html += `</div></div>`;
+  html += `<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(61,122,90,0.08);border:1px solid rgba(61,122,90,0.2);border-radius:8px"><span style="color:var(--sweep)">☁</span><span style="font-size:12px;color:var(--sweep);font-weight:500">My Game &amp; Journal syncing to cloud</span></div>`;
+  html += `</div>`;
+  return html;
+}
+
+function _buildFriendsSection(){
+  const pc = _pendingRequests.length;
+  const is = 'width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text-primary);font-size:14px;box-sizing:border-box;font-family:inherit';
+  let html = `<div class="journal-section">`;
+  html += `<div class="journal-section-title" style="display:flex;align-items:center;gap:6px;margin-bottom:12px">Friends${pc>0?`<span style="background:var(--sub);color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700">${pc}</span>`:''}<button onclick="loadFriendData()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;margin-left:auto;line-height:1;padding:0" title="Refresh">↻</button></div>`;
+  html += `<input type="text" id="friendSearch" placeholder="Search by username…" oninput="doFriendSearch()" style="${is}" autocapitalize="none" autocorrect="off">`;
+  html += `<div id="friendSearchResults" style="margin-top:6px"></div>`;
+  if(pc > 0){
+    html += `<div style="margin-top:12px"><div style="font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Pending Requests</div>`;
+    _pendingRequests.forEach(req => {
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:4px"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">@${req.fromUsername||req.from}</div><div style="display:flex;gap:6px"><button onclick="acceptRequest('${req.id}','${req.from}')" style="padding:4px 10px;background:var(--sweep);color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;font-family:inherit">Accept</button><button onclick="rejectRequest('${req.id}')" style="padding:4px 10px;background:var(--bg);color:var(--text-muted);border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">Decline</button></div></div>`;
+    });
+    html += `</div>`;
+  }
+  html += `<div style="margin-top:${pc>0?12:6}px">`;
+  if(_friendsList.length === 0){
+    html += `<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">No friends yet.<br>Search for training partners above.</div>`;
+  } else {
+    _friendsList.forEach(f => {
+      const fc = BELT_HEX[f.beltRank]||BELT_HEX.white, fi = (f.displayName||'?')[0].toUpperCase();
+      html += `<div onclick="viewFriendGame('${f.uid}','${(f.displayName||f.username||'').replace(/'/g,"&#39;")}')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:4px;cursor:pointer"><div style="width:36px;height:36px;border-radius:50%;background:${fc}22;border:2px solid ${fc};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:${fc};flex-shrink:0">${fi}</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">${f.displayName||f.username}</div><div style="font-size:11px;color:var(--text-muted)">@${f.username} · ${f.beltRank||'white'} belt${f.gym?' · '+f.gym:''}</div></div><span style="color:var(--text-muted);font-size:12px;flex-shrink:0">View →</span></div>`;
+    });
+  }
+  html += `</div></div>`;
+  return html;
+}
+
+// ── AUTH ACTIONS ──
+
+function _showAuthMsg(msg, isError){
+  const el = document.getElementById('authMsg');
+  if(!el) return;
+  el.style.display = 'block';
+  el.style.background = isError ? 'rgba(181,53,42,0.1)' : 'rgba(61,122,90,0.1)';
+  el.style.color = isError ? 'var(--sub)' : 'var(--sweep)';
+  el.style.border = `1px solid ${isError?'rgba(181,53,42,0.3)':'rgba(61,122,90,0.3)'}`;
+  el.textContent = msg;
+}
+
+function checkUsernameDebounce(){
+  clearTimeout(_unameCheckTimer);
+  const statusEl = document.getElementById('unameStatus');
+  if(statusEl) statusEl.textContent = '';
+  _unameCheckTimer = setTimeout(async () => {
+    const input = document.getElementById('suUsername');
+    if(!input) return;
+    const val = input.value.trim().toLowerCase();
+    const el = document.getElementById('unameStatus');
+    if(!val){ return; }
+    if(!/^[a-z0-9_]{3,20}$/.test(val)){
+      if(el){ el.textContent = '3–20 chars: letters, numbers, underscore only'; el.style.color = 'var(--sub)'; }
+      return;
+    }
+    if(!db){ if(el){ el.textContent = '✓ (Firebase not configured yet)'; el.style.color = 'var(--text-muted)'; } return; }
+    try {
+      const snap = await db.collection('usernames').doc(val).get();
+      if(el){ el.textContent = snap.exists ? '✗ Username taken' : '✓ Available'; el.style.color = snap.exists ? 'var(--sub)' : 'var(--sweep)'; }
+    } catch(e){ if(el){ el.textContent = 'Could not check availability'; el.style.color = 'var(--text-muted)'; } }
+  }, 500);
+}
+
+async function doSignUp(){
+  if(!auth || !db){ _showAuthMsg('Firebase not configured yet. Add your project config.', true); return; }
+  const displayName = document.getElementById('suName')?.value?.trim();
+  const username = document.getElementById('suUsername')?.value?.trim().toLowerCase();
+  const email = document.getElementById('suEmail')?.value?.trim();
+  const pass = document.getElementById('suPass')?.value;
+  if(!displayName || !username || !email || !pass){ _showAuthMsg('Please fill in all fields.', true); return; }
+  if(!/^[a-z0-9_]{3,20}$/.test(username)){ _showAuthMsg('Username: 3–20 chars, letters/numbers/underscore only.', true); return; }
+  if(pass.length < 6){ _showAuthMsg('Password must be at least 6 characters.', true); return; }
+  try {
+    const unameSnap = await db.collection('usernames').doc(username).get();
+    if(unameSnap.exists){ _showAuthMsg('Username already taken.', true); return; }
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    const uid = cred.user.uid;
+    const now = new Date().toISOString();
+    await db.collection('users').doc(uid).set({
+      username, displayName, email,
+      beltRank: myProfile.belt || 'white', gym: '', createdAt: now,
+      myGame: [...myGame], journalEntries: journalEntries.slice(-50)
+    });
+    await db.collection('usernames').doc(username).set({ uid });
+    cloudUserData = { username, displayName, email, beltRank: myProfile.belt||'white', gym: '' };
+  } catch(e){ _showAuthMsg(e.message || 'Sign up failed.', true); }
+}
+
+async function doSignIn(){
+  if(!auth){ _showAuthMsg('Firebase not configured yet. Add your project config.', true); return; }
+  const email = document.getElementById('authEmail')?.value?.trim();
+  const pass = document.getElementById('authPass')?.value;
+  if(!email || !pass){ _showAuthMsg('Enter email and password.', true); return; }
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch(e){ _showAuthMsg(e.message || 'Sign in failed.', true); }
+}
+
+async function doSignOut(){
+  if(!auth) return;
+  await auth.signOut();
+  cloudUserData = null; _pendingRequests = []; _friendsList = [];
+  updateMeBadge(); renderMe();
+}
+
+// ── CLOUD PROFILE ──
+
+async function loadCloudProfile(uid){
+  if(!db) return;
+  try {
+    const snap = await db.collection('users').doc(uid).get();
+    if(snap.exists){ cloudUserData = { uid, ...snap.data() }; }
+    await loadFriendData();
+    if(document.getElementById('meOverlay')?.classList.contains('open')) renderMe();
+  } catch(e){ console.warn('loadCloudProfile:', e); }
+}
+
+async function updateCloudProfile(updates){
+  if(!db || !currentUser) return;
+  try {
+    await db.collection('users').doc(currentUser.uid).update(updates);
+    if(!cloudUserData) cloudUserData = {};
+    Object.assign(cloudUserData, updates);
+    if(document.getElementById('meOverlay')?.classList.contains('open')) renderMe();
+  } catch(e){ console.warn('updateCloudProfile:', e); }
+}
+
+// ── CLOUD SYNC ──
+
+async function mergeLocalToCloud(uid){
+  if(!db) return;
+  try {
+    const snap = await db.collection('users').doc(uid).get();
+    if(!snap.exists) return;
+    const cloudData = snap.data();
+    // Merge My Game: union of local + cloud
+    const merged = new Set([...myGame, ...(cloudData.myGame||[])]);
+    myGame = merged;
+    localStorage.setItem('bjj_mygame', JSON.stringify([...myGame]));
+    // Merge journal: cloud wins for same date, append local-only entries
+    const cloudEntries = cloudData.journalEntries || [];
+    const cloudDates = new Set(cloudEntries.map(e => e.date));
+    const localOnly = journalEntries.filter(e => !cloudDates.has(e.date));
+    journalEntries = [...cloudEntries, ...localOnly].sort((a,b) => a.date.localeCompare(b.date));
+    localStorage.setItem('bjj_journal', JSON.stringify(journalEntries));
+    await db.collection('users').doc(uid).update({ myGame: [...myGame], journalEntries: journalEntries.slice(-100) });
+    drawGraph();
+  } catch(e){ console.warn('mergeLocalToCloud:', e); }
+}
+
+// ── FRIEND SYSTEM ──
+
+async function loadFriendData(){
+  if(!db || !currentUser) return;
+  try {
+    const reqSnap = await db.collection('friendRequests').where('to','==',currentUser.uid).where('status','==','pending').get();
+    _pendingRequests = await Promise.all(reqSnap.docs.map(async doc => {
+      const data = doc.data();
+      try { const s = await db.collection('users').doc(data.from).get(); data.fromUsername = s.data()?.username || data.from; } catch(e){}
+      return { id: doc.id, ...data };
+    }));
+    const friendSnap = await db.collection('users').doc(currentUser.uid).collection('friends').get();
+    _friendsList = await Promise.all(friendSnap.docs.map(async doc => {
+      try { const s = await db.collection('users').doc(doc.id).get(); return { uid: doc.id, ...s.data() }; } catch(e){ return { uid: doc.id }; }
+    }));
+    updateMeBadge();
+    if(document.getElementById('meOverlay')?.classList.contains('open')) renderMe();
+  } catch(e){ console.warn('loadFriendData:', e); }
+}
+
+function doFriendSearch(){
+  clearTimeout(_searchTimer);
+  const input = document.getElementById('friendSearch');
+  const val = input?.value?.trim().toLowerCase();
+  const resultsEl = document.getElementById('friendSearchResults');
+  if(!val || val.length < 2){ if(resultsEl) resultsEl.innerHTML = ''; return; }
+  _searchTimer = setTimeout(() => searchUsers(val), 400);
+}
+
+async function searchUsers(query){
+  const resultsEl = document.getElementById('friendSearchResults');
+  if(!resultsEl || !db) return;
+  try {
+    const snap = await db.collection('users').where('username','>=',query).where('username','<=',query+'\uf8ff').limit(10).get();
+    const isFriend = new Set(_friendsList.map(f => f.uid));
+    const results = snap.docs.filter(d => d.id !== currentUser?.uid).map(d => ({ uid: d.id, ...d.data() }));
+    if(results.length === 0){ resultsEl.innerHTML = `<div style="font-size:13px;color:var(--text-muted);padding:8px 0">No users found</div>`; return; }
+    let html = '';
+    results.forEach(u => {
+      const fc = BELT_HEX[u.beltRank]||BELT_HEX.white, fi = (u.displayName||u.username||'?')[0].toUpperCase();
+      const already = isFriend.has(u.uid);
+      html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:4px">`;
+      html += `<div style="width:32px;height:32px;border-radius:50%;background:${fc}22;border:2px solid ${fc};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${fc};flex-shrink:0">${fi}</div>`;
+      html += `<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">${u.displayName||u.username}</div><div style="font-size:11px;color:var(--text-muted)">@${u.username}${u.gym?' · '+u.gym:''}</div></div>`;
+      html += already
+        ? `<span style="font-size:12px;color:var(--sweep);font-weight:500">Friends ✓</span>`
+        : `<button onclick="sendFriendRequest('${u.uid}','${u.username}')" style="padding:5px 10px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;font-family:inherit">+ Add</button>`;
+      html += `</div>`;
+    });
+    resultsEl.innerHTML = html;
+  } catch(e){ resultsEl.innerHTML = `<div style="font-size:12px;color:var(--sub);padding:4px 0">Search failed</div>`; }
+}
+
+async function sendFriendRequest(toUid, toUsername){
+  if(!db || !currentUser) return;
+  try {
+    const existing = await db.collection('friendRequests').where('from','==',currentUser.uid).where('to','==',toUid).get();
+    if(!existing.empty){ alert('Request already sent!'); return; }
+    await db.collection('friendRequests').add({
+      from: currentUser.uid, fromUsername: cloudUserData?.username||'',
+      to: toUid, toUsername, status: 'pending', createdAt: new Date().toISOString()
+    });
+    // Update the button to show confirmation
+    document.querySelectorAll('#friendSearchResults button').forEach(btn => {
+      if(btn.getAttribute('onclick')?.includes(toUid)){ btn.textContent = 'Sent ✓'; btn.disabled = true; btn.style.opacity = '0.6'; }
+    });
+  } catch(e){ console.warn('sendFriendRequest:', e); }
+}
+
+async function acceptRequest(reqId, fromUid){
+  if(!db || !currentUser) return;
+  try {
+    const batch = db.batch();
+    batch.update(db.collection('friendRequests').doc(reqId), { status: 'accepted' });
+    batch.set(db.collection('users').doc(currentUser.uid).collection('friends').doc(fromUid), { since: new Date().toISOString() });
+    batch.set(db.collection('users').doc(fromUid).collection('friends').doc(currentUser.uid), { since: new Date().toISOString() });
+    await batch.commit();
+    await loadFriendData();
+  } catch(e){ console.warn('acceptRequest:', e); }
+}
+
+async function rejectRequest(reqId){
+  if(!db || !currentUser) return;
+  try {
+    await db.collection('friendRequests').doc(reqId).update({ status: 'rejected' });
+    _pendingRequests = _pendingRequests.filter(r => r.id !== reqId);
+    updateMeBadge();
+    if(document.getElementById('meOverlay')?.classList.contains('open')) renderMe();
+  } catch(e){ console.warn('rejectRequest:', e); }
+}
+
+async function viewFriendGame(friendUid, friendName){
+  if(!db) return;
+  try {
+    const snap = await db.collection('users').doc(friendUid).get();
+    if(!snap.exists){ alert("Couldn't load friend's data."); return; }
+    const friendGame = new Set(snap.data().myGame || []);
+    const starredPositions = positions.filter(p => friendGame.has(p.id));
+    const body = document.getElementById('meBody');
+    let html = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"><button onclick="renderMe()" style="background:none;border:none;font-size:20px;color:var(--text-muted);cursor:pointer;padding:0;line-height:1">←</button><div style="font-size:18px;font-weight:700;color:var(--text-primary)">${friendName}'s Game</div></div>`;
+    if(starredPositions.length === 0){
+      html += `<div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:14px">${friendName} hasn't starred any positions yet.</div>`;
+    } else {
+      const byType = {};
+      starredPositions.forEach(p => { if(!byType[p.type]) byType[p.type]=[]; byType[p.type].push(p); });
+      Object.keys(byType).forEach(type => {
+        const tc = TYPES[type]||'var(--accent)';
+        html += `<div class="journal-section"><div class="journal-section-title" style="color:${tc}">${type.charAt(0).toUpperCase()+type.slice(1)}</div>`;
+        byType[type].forEach(p => {
+          html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:4px"><div style="width:28px;height:28px;border-radius:50%;background:${tc}18;border:2px solid ${tc};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${tc}">${p.abbr}</div><span style="font-size:13px;font-weight:600;color:var(--text-primary)">${p.name}</span></div>`;
+        });
+        html += `</div>`;
+      });
+    }
+    body.innerHTML = html;
+  } catch(e){ console.warn('viewFriendGame:', e); alert("Couldn't load friend's game."); }
+}
 
 window.addEventListener('resize',()=>{
   const nw=window.innerWidth, nh=window.innerHeight;
