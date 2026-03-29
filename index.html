@@ -1675,6 +1675,20 @@ function drawGraph(){
       ctx.stroke();
       ctx.setLineDash([]);
     }
+    // Gold ring for My Game starred positions
+    if(myGame.has(p.id)){
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,radius+8,0,Math.PI*2);
+      ctx.strokeStyle='#D4A017';
+      ctx.lineWidth=2.5;
+      ctx.stroke();
+      // Star badge at top-right
+      ctx.font='bold 11px Inter,sans-serif';
+      ctx.fillStyle='#D4A017';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText('★',p.x+radius*0.7,p.y-radius*0.7);
+    }
     // Gradient fill
     const grad=ctx.createRadialGradient(p.x-4,p.y-4,0,p.x,p.y,radius);
     if(isDimmed){
@@ -1730,6 +1744,7 @@ function showQuickCard(node){
       ${trans?`<div class="quick-card-stat"><strong style="color:var(--transition)">${trans}</strong> transitions</div>`:''}
     </div>
     <div class="quick-card-actions">
+      <button class="quick-card-btn secondary" id="qcStarBtn" onclick="toggleMyGame('${node.id}');document.getElementById('qcStarBtn').innerHTML=myGame.has('${node.id}')?'★ My Game':'☆ My Game';document.getElementById('qcStarBtn').style.color=myGame.has('${node.id}')?'var(--gold)':'';" style="color:${myGame.has(node.id)?'var(--gold)':''};">${myGame.has(node.id)?'★ My Game':'☆ My Game'}</button>
       <button class="quick-card-btn secondary" onclick="dismissQuickCard();openDetail(positions.find(p=>p.id==='${node.id}'))">Details</button>
       <button class="quick-card-btn primary" onclick="dismissQuickCard();openFocus(positions.find(p=>p.id==='${node.id}'))">Connections →</button>
     </div>
@@ -2110,7 +2125,10 @@ function openDetail(node){
       <span style="width:8px;height:8px;border-radius:4px;background:${color};display:inline-block"></span>
       ${typeName}
     </div>
-    <div class="detail-name">${node.name}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div class="detail-name" style="flex:1;margin:0">${node.name}</div>
+      <button id="detailStarBtn" onclick="toggleMyGame('${node.id}');const b=document.getElementById('detailStarBtn');const starred=myGame.has('${node.id}');b.innerHTML=starred?'★':'☆';b.style.color=starred?'var(--gold)':'var(--text-muted)';" style="background:none;border:none;font-size:22px;cursor:pointer;color:${myGame.has(node.id)?'var(--gold)':'var(--text-muted)'};padding:0 4px;line-height:1;flex-shrink:0">${myGame.has(node.id)?'★':'☆'}</button>
+    </div>
     <div class="detail-desc">${node.desc}</div>
     <button class="save-training-btn ${isSaved?'saved':''}" onclick="toggleSaveToTraining('${node.id}')" id="saveTrainBtn">
       ${isSaved ? '✓ Saved to Training Plan' : '＋ Save to Training Plan'}
@@ -2692,6 +2710,22 @@ function showPathBanner(){
     boxShadow:'0 2px 12px rgba(0,0,0,0.15)'
   });
   document.body.appendChild(banner);
+}
+
+// ═══════════════════════════════════════════════
+//  MY GAME
+// ═══════════════════════════════════════════════
+let myGame = new Set(JSON.parse(localStorage.getItem('bjj_mygame') || '[]'));
+
+function saveMyGame(){
+  localStorage.setItem('bjj_mygame', JSON.stringify([...myGame]));
+}
+
+function toggleMyGame(id){
+  if(myGame.has(id)) myGame.delete(id);
+  else myGame.add(id);
+  saveMyGame();
+  drawGraph();
 }
 
 // ═══════════════════════════════════════════════
@@ -3393,6 +3427,82 @@ function renderMe(){
     </div>
   </div>`;
 
+  // ── My Game section ──
+  const starredPositions = positions.filter(p => myGame.has(p.id));
+  html += '<div class="journal-section">';
+  html += '<div class="journal-section-title" style="display:flex;align-items:center;gap:6px"><span style="color:var(--gold)">★</span> My Game</div>';
+
+  if(starredPositions.length === 0){
+    html += '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">No positions starred yet.<br>Tap ☆ on any position to add it to your game.</div>';
+  } else {
+    // Group by type
+    const byType = {};
+    starredPositions.forEach(p => {
+      if(!byType[p.type]) byType[p.type] = [];
+      byType[p.type].push(p);
+    });
+    Object.keys(byType).forEach(type => {
+      const typeColor = TYPES[type] || 'var(--accent)';
+      const typeName = type.charAt(0).toUpperCase() + type.slice(1);
+      html += `<div style="margin-bottom:10px">`;
+      html += `<div style="font-size:11px;font-weight:700;color:${typeColor};letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px">${typeName}</div>`;
+      byType[type].forEach(p => {
+        html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:28px;height:28px;border-radius:50%;background:${typeColor}18;border:2px solid ${typeColor};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${typeColor}">${p.abbr}</div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary)">${p.name}</span>
+          </div>
+          <button onclick="toggleMyGame('${p.id}');renderMe()" style="background:none;border:none;font-size:18px;color:var(--gold);cursor:pointer;padding:0 4px">☆</button>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+
+    // Mini game map — canvas showing only starred nodes and connections between them
+    const starredIds = new Set(starredPositions.map(p => p.id));
+    const gameEdges = edges.filter(e => starredIds.has(e.from) && starredIds.has(e.to));
+    if(gameEdges.length > 0){
+      html += `<div style="margin:12px 0 4px;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase">Game Map</div>`;
+      html += `<canvas id="myGameMap" width="320" height="180" style="width:100%;border-radius:12px;border:1px solid var(--border);background:var(--bg)"></canvas>`;
+    }
+
+    // Expand Your Game suggestions
+    const connected = {};
+    edges.forEach(e => {
+      if(starredIds.has(e.from) && !starredIds.has(e.to)){
+        connected[e.to] = (connected[e.to]||0) + 1;
+      }
+      if(starredIds.has(e.to) && !starredIds.has(e.from)){
+        connected[e.from] = (connected[e.from]||0) + 1;
+      }
+    });
+    const suggestions = Object.entries(connected)
+      .sort((a,b) => b[1]-a[1])
+      .slice(0,5)
+      .map(([id]) => positions.find(p => p.id === id))
+      .filter(Boolean);
+
+    if(suggestions.length > 0){
+      html += `<div style="margin:14px 0 8px;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase">Expand Your Game</div>`;
+      html += `<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">Positions most connected to your starred ones</div>`;
+      suggestions.forEach(p => {
+        const c = connected[p.id];
+        const col = TYPES[p.type] || 'var(--accent)';
+        html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:28px;height:28px;border-radius:50%;background:${col}18;border:2px solid ${col};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${col}">${p.abbr}</div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary)">${p.name}</div>
+              <div style="font-size:11px;color:var(--text-muted)">${c} connection${c!==1?'s':''} to your game</div>
+            </div>
+          </div>
+          <button onclick="toggleMyGame('${p.id}');renderMe()" style="background:none;border:none;font-size:18px;color:var(--text-muted);cursor:pointer;padding:0 4px">☆</button>
+        </div>`;
+      });
+    }
+  }
+  html += '</div>';
+
   // Belt rank controls
   html += '<div class="journal-section">';
   html += '<div class="journal-section-title">Current Rank</div>';
@@ -3621,6 +3731,58 @@ function renderMe(){
   }
 
   body.innerHTML = html;
+
+  // Draw mini game map if canvas exists
+  const mapCanvas = document.getElementById('myGameMap');
+  if(mapCanvas){
+    const starredIds = new Set([...myGame]);
+    const sNodes = positions.filter(p => starredIds.has(p.id));
+    const sEdges = edges.filter(e => starredIds.has(e.from) && starredIds.has(e.to));
+    const mctx = mapCanvas.getContext('2d');
+    const mw = mapCanvas.width, mh = mapCanvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    mapCanvas.width = mw * dpr; mapCanvas.height = mh * dpr;
+    mapCanvas.style.width = mw + 'px'; mapCanvas.style.height = mh + 'px';
+    mctx.scale(dpr, dpr);
+    mctx.clearRect(0, 0, mw, mh);
+    if(sNodes.length < 2){ mctx.restore && mctx.restore(); }
+    else {
+      // Layout: use existing x/y positions, scale to fit canvas
+      const xs = sNodes.map(p=>p.x), ys = sNodes.map(p=>p.y);
+      const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
+      const pad=28, scaleX=(maxX>minX)?(mw-pad*2)/(maxX-minX):1, scaleY=(maxY>minY)?(mh-pad*2)/(maxY-minY):1;
+      const sc=Math.min(scaleX,scaleY);
+      const cx=(mw-(maxX-minX)*sc)/2, cy=(mh-(maxY-minY)*sc)/2;
+      const tx=p=>(p.x-minX)*sc+cx, ty=p=>(p.y-minY)*sc+cy;
+      // Edges
+      sEdges.forEach(e=>{
+        const a=sNodes.find(n=>n.id===e.from), b=sNodes.find(n=>n.id===e.to);
+        if(!a||!b) return;
+        mctx.beginPath();
+        mctx.moveTo(tx(a),ty(a));
+        mctx.lineTo(tx(b),ty(b));
+        mctx.strokeStyle=TYPES[a.type]+'55';
+        mctx.lineWidth=1.5;
+        mctx.stroke();
+      });
+      // Nodes
+      sNodes.forEach(p=>{
+        const col=TYPES[p.type]||'#888';
+        const r=12;
+        mctx.beginPath(); mctx.arc(tx(p),ty(p),r+3,0,Math.PI*2);
+        mctx.strokeStyle='#D4A017'; mctx.lineWidth=1.5; mctx.stroke();
+        mctx.beginPath(); mctx.arc(tx(p),ty(p),r,0,Math.PI*2);
+        mctx.fillStyle='#FFF'; mctx.fill();
+        mctx.strokeStyle=col; mctx.lineWidth=2; mctx.stroke();
+        mctx.fillStyle=col; mctx.font='bold 8px Inter,sans-serif';
+        mctx.textAlign='center'; mctx.textBaseline='middle';
+        mctx.fillText(p.abbr,tx(p),ty(p));
+        mctx.fillStyle='#6B5744'; mctx.font='500 7px Inter,sans-serif';
+        mctx.textBaseline='top';
+        mctx.fillText(p.name,tx(p),ty(p)+r+2);
+      });
+    }
+  }
 }
 
 function getGoalInsights(goal){
