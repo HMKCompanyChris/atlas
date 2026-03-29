@@ -959,31 +959,142 @@ const TYPES = {
 const EDGE_COLORS = { submission:'#B5352A', sweep:'#2A8B7A', transition:'#C4872A' };
 
 const POSITION_VIDEOS = {
-  'guard': [{title:'Closed Guard Fundamentals', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+closed+guard+fundamentals+-shorts'}],
-  'open_guard': [{title:'Open Guard Retention', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+open+guard+retention+-shorts'}],
-  'half_guard': [{title:'Half Guard Sweeps', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+half+guard+sweeps+-shorts'}],
-  'deep_half': [{title:'Deep Half Guard System', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+deep+half+guard+-shorts'}],
-  'butterfly': [{title:'Butterfly Guard Sweeps', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+butterfly+guard+sweeps+-shorts'}],
-  'spider': [{title:'Spider Guard Basics', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+spider+guard+-shorts'}],
-  'dlr': [{title:'De La Riva Fundamentals', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+de+la+riva+guard+-shorts'}],
-  'x_guard': [{title:'X Guard Sweeps', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+x+guard+sweeps+-shorts'}],
-  'rdlr': [{title:'Reverse De La Riva', channel:'Mikey Musumeci', url:'https://www.youtube.com/results?search_query=mikey+musumeci+reverse+de+la+riva+-shorts'}],
-  'lasso': [{title:'Lasso Guard Attacks', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+lasso+guard+-shorts'}],
-  'mount': [{title:'Maintaining Mount', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+mount+attacks+bjj+-shorts'}],
-  'side_control': [{title:'Side Control Attacks', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+side+control+attacks+-shorts'}],
-  'back_mount': [{title:'Back Mount Attacks', channel:'John Danaher', url:'https://www.youtube.com/results?search_query=john+danaher+back+mount+attacks+-shorts'}],
-  'back_control': [{title:'Back Control System', channel:'John Danaher', url:'https://www.youtube.com/results?search_query=john+danaher+back+control+rnc+-shorts'}],
-  'north_south': [{title:'North-South Choke', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+north+south+choke+-shorts'}],
-  'knee_on_belly': [{title:'Knee on Belly Pressure', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+knee+on+belly+-shorts'}],
-  'turtle': [{title:'Turtle Attacks & Escapes', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+turtle+attacks+bjj+-shorts'}],
-  'standing': [{title:'Takedowns for BJJ', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+takedowns+for+bjj+-shorts'}],
-  '50_50': [{title:'50/50 Guard Heel Hooks', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+50+50+guard+heel+hook+-shorts'}],
-  'outside_heel': [{title:'Outside Heel Hook', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+outside+heel+hook+-shorts'}],
-  'inside_heel': [{title:'Inside Heel Hook', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+inside+heel+hook+saddle+-shorts'}],
-  'ashi': [{title:'Ashi Garami System', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+ashi+garami+straight+ankle+-shorts'}],
-  'single_leg_x': [{title:'Single Leg X Entries', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+single+leg+x+guard+-shorts'}],
-  'top_half': [{title:'Passing Half Guard', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+passing+half+guard+-shorts'}],
-  'crucifix': [{title:'Crucifix Position', channel:'Alexandre Vieira', url:'https://www.youtube.com/results?search_query=crucifix+position+bjj+attacks+-shorts'}]
+  'closed_guard': [
+    {title:'Closed Guard Fundamentals', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+closed+guard+fundamentals+-shorts'},
+    {title:'Closed Guard Attacks & Submissions', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+closed+guard+attacks+-shorts'}
+  ],
+  'open_guard': [
+    {title:'Open Guard Retention', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+open+guard+retention+-shorts'},
+    {title:'Open Guard Systems', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+open+guard+systems+-shorts'}
+  ],
+  'half_guard': [
+    {title:'Half Guard Sweeps', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+half+guard+sweeps+-shorts'},
+    {title:'Half Guard Fundamentals', channel:'Tom DeBlass', url:'https://www.youtube.com/results?search_query=tom+deblass+half+guard+fundamentals+-shorts'}
+  ],
+  'butterfly_guard': [
+    {title:'Butterfly Guard Sweeps', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+butterfly+guard+sweeps+-shorts'},
+    {title:'Butterfly Guard System', channel:'Adam Wardzinski', url:'https://www.youtube.com/results?search_query=adam+wardzinski+butterfly+guard+-shorts'}
+  ],
+  'de_la_riva': [
+    {title:'De La Riva Fundamentals', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+de+la+riva+guard+-shorts'},
+    {title:'DLR Guard Attacks', channel:'Mikey Musumeci', url:'https://www.youtube.com/results?search_query=mikey+musumeci+de+la+riva+-shorts'}
+  ],
+  'spider_guard': [
+    {title:'Spider Guard Basics', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+spider+guard+-shorts'},
+    {title:'Spider Guard Sweeps & Attacks', channel:'BJJ Fanatics', url:'https://www.youtube.com/results?search_query=spider+guard+sweeps+bjj+fanatics+-shorts'}
+  ],
+  'lasso_guard': [
+    {title:'Lasso Guard Attacks', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+lasso+guard+-shorts'},
+    {title:'Lasso Guard System', channel:'Michael Liera Jr', url:'https://www.youtube.com/results?search_query=lasso+guard+system+bjj+-shorts'}
+  ],
+  'rubber_guard': [
+    {title:'Rubber Guard System', channel:'10th Planet', url:'https://www.youtube.com/results?search_query=10th+planet+rubber+guard+system+-shorts'},
+    {title:'Mission Control & Rubber Guard', channel:'Eddie Bravo', url:'https://www.youtube.com/results?search_query=eddie+bravo+rubber+guard+mission+control+-shorts'}
+  ],
+  'mount': [
+    {title:'Maintaining Mount', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+mount+attacks+bjj+-shorts'},
+    {title:'Mount Submissions', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+mount+submissions+-shorts'}
+  ],
+  'side_control': [
+    {title:'Side Control Attacks', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+side+control+attacks+-shorts'},
+    {title:'Side Control System', channel:'John Danaher', url:'https://www.youtube.com/results?search_query=john+danaher+side+control+system+-shorts'}
+  ],
+  'knee_on_belly': [
+    {title:'Knee on Belly Pressure', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+knee+on+belly+-shorts'},
+    {title:'Knee on Belly Attacks', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+knee+on+belly+attacks+-shorts'}
+  ],
+  'north_south': [
+    {title:'North-South Choke', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+north+south+choke+-shorts'},
+    {title:'North-South Position', channel:'Marcelo Garcia', url:'https://www.youtube.com/results?search_query=marcelo+garcia+north+south+position+-shorts'}
+  ],
+  'scarf_hold': [
+    {title:'Scarf Hold Attacks', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+kesa+gatame+scarf+hold+-shorts'},
+    {title:'Kesa Gatame System', channel:'BJJ Fanatics', url:'https://www.youtube.com/results?search_query=kesa+gatame+bjj+attacks+-shorts'}
+  ],
+  'half_guard_top': [
+    {title:'Passing Half Guard', channel:'Bernardo Faria BJJ', url:'https://www.youtube.com/results?search_query=bernardo+faria+passing+half+guard+-shorts'},
+    {title:'Half Guard Top Control', channel:'Gordon Ryan', url:'https://www.youtube.com/results?search_query=gordon+ryan+passing+half+guard+-shorts'}
+  ],
+  'guard_top': [
+    {title:'Guard Passing Fundamentals', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+guard+passing+-shorts'},
+    {title:'Guard Pass System', channel:'Gordon Ryan', url:'https://www.youtube.com/results?search_query=gordon+ryan+guard+passing+system+-shorts'}
+  ],
+  'back_control': [
+    {title:'Back Control System', channel:'John Danaher', url:'https://www.youtube.com/results?search_query=john+danaher+back+control+rnc+-shorts'},
+    {title:'Back Mount Attacks', channel:'Gordon Ryan', url:'https://www.youtube.com/results?search_query=gordon+ryan+back+attacks+-shorts'}
+  ],
+  'turtle_top': [
+    {title:'Turtle Attacks & Escapes', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+turtle+attacks+bjj+-shorts'},
+    {title:'Attacking the Turtle', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+attacking+turtle+position+-shorts'}
+  ],
+  'crucifix': [
+    {title:'Crucifix Position', channel:'Alexandre Vieira', url:'https://www.youtube.com/results?search_query=crucifix+position+bjj+attacks+-shorts'},
+    {title:'Crucifix Entries & Attacks', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+crucifix+bjj+-shorts'}
+  ],
+  'standing': [
+    {title:'Takedowns for BJJ', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+takedowns+for+bjj+-shorts'},
+    {title:'BJJ Takedown System', channel:'John Danaher', url:'https://www.youtube.com/results?search_query=john+danaher+takedowns+bjj+-shorts'}
+  ],
+  'turtle_bottom': [
+    {title:'Turtle Defense & Escapes', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+turtle+escapes+bjj+-shorts'},
+    {title:'Turtle Bottom Recovery', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+turtle+bottom+escapes+-shorts'}
+  ],
+  'guard_pull': [
+    {title:'Guard Pull for Competition', channel:'Mikey Musumeci', url:'https://www.youtube.com/results?search_query=mikey+musumeci+guard+pull+-shorts'},
+    {title:'Guard Pulling Concepts', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+guard+pull+strategy+-shorts'}
+  ],
+  'single_leg_x': [
+    {title:'Single Leg X Entries', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+single+leg+x+guard+-shorts'},
+    {title:'Single Leg X System', channel:'Mikey Musumeci', url:'https://www.youtube.com/results?search_query=mikey+musumeci+single+leg+x+-shorts'}
+  ],
+  'x_guard': [
+    {title:'X Guard Sweeps', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+x+guard+sweeps+-shorts'},
+    {title:'X-Guard System', channel:'Marcelo Garcia', url:'https://www.youtube.com/results?search_query=marcelo+garcia+x+guard+system+-shorts'}
+  ],
+  'ashi_garami': [
+    {title:'Ashi Garami System', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+ashi+garami+straight+ankle+-shorts'},
+    {title:'Ashi Garami Entries', channel:'John Danaher', url:'https://www.youtube.com/results?search_query=john+danaher+ashi+garami+leg+locks+-shorts'}
+  ],
+  'fifty_fifty': [
+    {title:'50/50 Guard Heel Hooks', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+50+50+guard+heel+hook+-shorts'},
+    {title:'50/50 Position Attacks', channel:'Craig Jones', url:'https://www.youtube.com/results?search_query=craig+jones+50+50+leg+locks+-shorts'}
+  ]
+};
+
+const TECHNIQUE_VIDEOS = {
+  'Armbar': {title:'Armbar from Everywhere', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+armbar+system+-shorts'},
+  'Triangle': {title:'Triangle Choke System', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+triangle+choke+system+-shorts'},
+  'Kimura': {title:'Kimura Trap System', channel:'Bernardo Faria', url:'https://www.youtube.com/results?search_query=bernardo+faria+kimura+trap+-shorts'},
+  'RNC': {title:'Rear Naked Choke Details', channel:'John Danaher', url:'https://www.youtube.com/results?search_query=john+danaher+rear+naked+choke+-shorts'},
+  'Rear Naked Choke': {title:'Rear Naked Choke Details', channel:'John Danaher', url:'https://www.youtube.com/results?search_query=john+danaher+rear+naked+choke+-shorts'},
+  'Bow & Arrow': {title:'Bow and Arrow Choke', channel:'Bernardo Faria', url:'https://www.youtube.com/results?search_query=bernardo+faria+bow+and+arrow+choke+-shorts'},
+  'Heel Hook': {title:'Heel Hook Mechanics', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+heel+hook+mechanics+-shorts'},
+  'Outside Heel Hook': {title:'Outside Heel Hook', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+outside+heel+hook+finish+-shorts'},
+  'Inside Heel Hook': {title:'Inside Heel Hook', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+inside+heel+hook+saddle+-shorts'},
+  'Heel Hook from SLX': {title:'Heel Hook Mechanics', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+heel+hook+mechanics+-shorts'},
+  'Heel Hook from 5050': {title:'Heel Hook Mechanics', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+heel+hook+mechanics+-shorts'},
+  'Ezekiel': {title:'Ezekiel Choke', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+ezekiel+choke+-shorts'},
+  'Ezekiel Choke': {title:'Ezekiel Choke', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+ezekiel+choke+-shorts'},
+  'Cross Choke': {title:'Cross Choke from Mount', channel:'Bernardo Faria', url:'https://www.youtube.com/results?search_query=bernardo+faria+cross+choke+mount+-shorts'},
+  'Cross Collar Choke': {title:'Cross Choke from Mount', channel:'Bernardo Faria', url:'https://www.youtube.com/results?search_query=bernardo+faria+cross+choke+mount+-shorts'},
+  'NS Choke': {title:'North-South Choke', channel:'Bernardo Faria', url:'https://www.youtube.com/results?search_query=bernardo+faria+north+south+choke+-shorts'},
+  'North-South Choke': {title:'North-South Choke', channel:'Bernardo Faria', url:'https://www.youtube.com/results?search_query=bernardo+faria+north+south+choke+-shorts'},
+  'Electric Chair': {title:'Electric Chair Sweep', channel:'10th Planet', url:'https://www.youtube.com/results?search_query=10th+planet+electric+chair+sweep+-shorts'},
+  'Butterfly Sweep': {title:'Butterfly Sweep', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+butterfly+sweep+-shorts'},
+  'Hook Sweep': {title:'Butterfly Sweep', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+butterfly+sweep+-shorts'},
+  'Hip Bump': {title:'Hip Bump Sweep', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+hip+bump+sweep+-shorts'},
+  'Hip Bump Sweep': {title:'Hip Bump Sweep', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+hip+bump+sweep+-shorts'},
+  'Berimbolo': {title:'Berimbolo System', channel:'Mikey Musumeci', url:'https://www.youtube.com/results?search_query=mikey+musumeci+berimbolo+-shorts'},
+  'Old School Sweep': {title:'Old School Half Guard Sweep', channel:'Bernardo Faria', url:'https://www.youtube.com/results?search_query=bernardo+faria+old+school+sweep+-shorts'},
+  'X Guard Sweep': {title:'X Guard Sweeps', channel:'Lachlan Giles', url:'https://www.youtube.com/results?search_query=lachlan+giles+x+guard+sweep+-shorts'},
+  'Lasso Sweep': {title:'Lasso Guard Sweep', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+lasso+sweep+-shorts'},
+  'Tomahawk Sweep': {title:'Tomahawk Sweep', channel:'Keenan Cornelius', url:'https://www.youtube.com/results?search_query=keenan+cornelius+tomahawk+sweep+spider+-shorts'},
+  'Jeff Roll': {title:'Jeff Glover Deep Half Sweep', channel:'BJJ Fanatics', url:'https://www.youtube.com/results?search_query=jeff+glover+deep+half+sweep+-shorts'},
+  'Homer Simpson': {title:'Homer Simpson Sweep', channel:'BJJ Fanatics', url:'https://www.youtube.com/results?search_query=homer+simpson+sweep+deep+half+-shorts'},
+  'Kiss of Dragon': {title:'Kiss of the Dragon', channel:'Mikey Musumeci', url:'https://www.youtube.com/results?search_query=mikey+musumeci+kiss+of+the+dragon+-shorts'},
+  'Back Take': {title:'Back Takes from Everywhere', channel:'John Danaher', url:'https://www.youtube.com/results?search_query=john+danaher+back+takes+-shorts'},
+  'Guard Pull': {title:'Guard Pull for Competition', channel:'Mikey Musumeci', url:'https://www.youtube.com/results?search_query=mikey+musumeci+guard+pull+-shorts'},
+  'Takedown': {title:'Takedowns for BJJ', channel:'Chewjitsu', url:'https://www.youtube.com/results?search_query=chewjitsu+takedowns+for+bjj+-shorts'},
 };
 
 const positions = [
@@ -2181,10 +2292,12 @@ function openDetail(node){
   if(subs.length){
     html+=`<div class="detail-section"><div class="detail-section-title">Submissions (${subs.length})</div>`;
     subs.forEach((s,idx)=>{
+      const tv = TECHNIQUE_VIDEOS[s.label];
+      const videoLink = tv ? ` <a href="${tv.url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:11px;font-weight:500;text-decoration:none;white-space:nowrap">&#9654; ${tv.channel}</a>` : '';
       const descHtml = s.desc ? `<div style="font-size:13px;color:#6B5744;line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
       const stepsHtml = s.steps ? s.steps.map((step,i)=>`<div class="technique-step"><span class="technique-step-num" style="background:var(--sub)">${i+1}</span><div>${step}</div></div>`).join('') : '';
       html+=`<div class="detail-card technique-card" style="border-left:3px solid var(--sub);cursor:pointer" onclick="toggleTechniqueSteps(this)">
-        <div class="detail-card-title" style="color:var(--sub)">${s.label}</div>
+        <div class="detail-card-title" style="color:var(--sub);display:flex;align-items:center;gap:6px;flex-wrap:wrap">${s.label}${videoLink}</div>
         ${stepsHtml ? `<div class="technique-steps" style="display:none;margin-top:8px;border-top:1px solid #eee;padding-top:8px">${descHtml}${stepsHtml}</div>` : ''}
       </div>`;
     });
@@ -2194,10 +2307,12 @@ function openDetail(node){
   if(sweeps.length){
     html+=`<div class="detail-section"><div class="detail-section-title">Sweeps (${sweeps.length})</div>`;
     sweeps.forEach((s,idx)=>{
+      const tv = TECHNIQUE_VIDEOS[s.label];
+      const videoLink = tv ? ` <a href="${tv.url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:11px;font-weight:500;text-decoration:none;white-space:nowrap">&#9654; ${tv.channel}</a>` : '';
       const descHtml = s.desc ? `<div style="font-size:13px;color:#6B5744;line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
       const stepsHtml = s.steps ? s.steps.map((step,i)=>`<div class="technique-step"><span class="technique-step-num" style="background:var(--sweep)">${i+1}</span><div>${step}</div></div>`).join('') : '';
       html+=`<div class="detail-card technique-card" style="border-left:3px solid var(--sweep);cursor:pointer" onclick="toggleTechniqueSteps(this)">
-        <div class="detail-card-title" style="color:var(--sweep)">${s.label}</div>
+        <div class="detail-card-title" style="color:var(--sweep);display:flex;align-items:center;gap:6px;flex-wrap:wrap">${s.label}${videoLink}</div>
         ${stepsHtml ? `<div class="technique-steps" style="display:none;margin-top:8px;border-top:1px solid #eee;padding-top:8px">${descHtml}${stepsHtml}</div>` : ''}
       </div>`;
     });
@@ -2207,10 +2322,12 @@ function openDetail(node){
   if(trans.length){
     html+=`<div class="detail-section"><div class="detail-section-title">Transitions (${trans.length})</div>`;
     trans.forEach((s,idx)=>{
+      const tv = TECHNIQUE_VIDEOS[s.label];
+      const videoLink = tv ? ` <a href="${tv.url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:11px;font-weight:500;text-decoration:none;white-space:nowrap">&#9654; ${tv.channel}</a>` : '';
       const descHtml = s.desc ? `<div style="font-size:13px;color:#6B5744;line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
       const stepsHtml = s.steps ? s.steps.map((step,i)=>`<div class="technique-step"><span class="technique-step-num" style="background:var(--transition)">${i+1}</span><div>${step}</div></div>`).join('') : '';
       html+=`<div class="detail-card technique-card" style="border-left:3px solid var(--transition);cursor:pointer" onclick="toggleTechniqueSteps(this)">
-        <div class="detail-card-title" style="color:var(--transition)">${s.label}</div>
+        <div class="detail-card-title" style="color:var(--transition);display:flex;align-items:center;gap:6px;flex-wrap:wrap">${s.label}${videoLink}</div>
         ${stepsHtml ? `<div class="technique-steps" style="display:none;margin-top:8px;border-top:1px solid #eee;padding-top:8px">${descHtml}${stepsHtml}</div>` : ''}
       </div>`;
     });
