@@ -634,9 +634,156 @@ canvas { display:block; }
   from { transform:translateY(100%); }
   to { transform:translateY(0); }
 }
+
+/* ── ONBOARDING OVERLAY ─────────────────────────────────────────── */
+#onboardingOverlay {
+  position:fixed; inset:0; z-index:9999;
+  background:linear-gradient(160deg, #2C1810 0%, #1A0F08 60%, #0D0705 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  overflow:hidden;
+  transition:opacity 0.5s ease, visibility 0.5s ease;
+}
+#onboardingOverlay.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+
+/* Ambient glow blobs */
+#onboardingOverlay::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(196,87,42,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 80% 80%, rgba(184,134,11,0.14) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+#onboardingSkip {
+  position:absolute; top:18px; right:18px;
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.55); font-size:13px; font-weight:500;
+  padding:6px 14px; border-radius:20px; cursor:pointer;
+  font-family:inherit; transition:all 0.2s; z-index:2;
+  backdrop-filter:blur(6px);
+}
+#onboardingSkip:hover { background:rgba(255,255,255,0.14); color:rgba(255,255,255,0.85); }
+
+/* Card track */
+.ob-track-wrap {
+  width:100%; max-width:400px;
+  overflow:hidden; position:relative;
+  flex:1; display:flex; align-items:center;
+}
+.ob-track {
+  display:flex; height:100%;
+  transition:transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94);
+  touch-action:pan-y; user-select:none;
+}
+.ob-card {
+  min-width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:32px 36px; box-sizing:border-box; text-align:center;
+}
+
+/* Illustration containers */
+.ob-illustration {
+  width:160px; height:160px; border-radius:32px;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:28px; position:relative; flex-shrink:0;
+  font-size:72px; line-height:1;
+}
+/* Per-card colours */
+.ob-card:nth-child(1) .ob-illustration { background:linear-gradient(135deg,rgba(196,87,42,0.25),rgba(184,134,11,0.2)); box-shadow:0 12px 48px rgba(196,87,42,0.3); }
+.ob-card:nth-child(2) .ob-illustration { background:linear-gradient(135deg,rgba(61,126,166,0.25),rgba(61,122,90,0.2)); box-shadow:0 12px 48px rgba(61,126,166,0.3); }
+.ob-card:nth-child(3) .ob-illustration { background:linear-gradient(135deg,rgba(122,61,106,0.25),rgba(181,53,42,0.2)); box-shadow:0 12px 48px rgba(122,61,106,0.3); }
+.ob-card:nth-child(4) .ob-illustration { background:linear-gradient(135deg,rgba(184,134,11,0.25),rgba(196,87,42,0.2)); box-shadow:0 12px 48px rgba(184,134,11,0.3); }
+
+/* Decorative ring behind icon */
+.ob-illustration::before {
+  content:''; position:absolute; inset:-8px;
+  border-radius:40px; border:1px solid rgba(255,255,255,0.06);
+}
+.ob-illustration::after {
+  content:''; position:absolute; inset:-18px;
+  border-radius:50px; border:1px solid rgba(255,255,255,0.03);
+}
+
+.ob-heading {
+  font-size:24px; font-weight:700; letter-spacing:-0.4px;
+  color:#FFFFFF; margin-bottom:12px; line-height:1.25;
+}
+.ob-sub {
+  font-size:15px; line-height:1.6; color:rgba(255,255,255,0.55);
+  max-width:280px;
+}
+
+/* Dots */
+.ob-dots {
+  display:flex; gap:8px; margin-bottom:20px;
+}
+.ob-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:rgba(255,255,255,0.2); transition:all 0.3s ease; cursor:pointer;
+}
+.ob-dot.active { width:22px; border-radius:4px; background:var(--accent); }
+
+/* Get Started button */
+#obGetStarted {
+  width:calc(100% - 48px); max-width:320px;
+  padding:16px; border-radius:14px; border:none; cursor:pointer;
+  background:linear-gradient(135deg, var(--accent) 0%, #D4692F 100%);
+  color:#fff; font-size:17px; font-weight:700; font-family:inherit;
+  letter-spacing:0.2px; margin-bottom:48px;
+  box-shadow:0 8px 32px rgba(196,87,42,0.45);
+  transition:transform 0.15s, box-shadow 0.15s, opacity 0.3s;
+  opacity:0; pointer-events:none;
+}
+#obGetStarted.visible { opacity:1; pointer-events:auto; }
+#obGetStarted:active { transform:scale(0.97); box-shadow:0 4px 16px rgba(196,87,42,0.4); }
 </style>
 </head>
 <body>
+
+<!-- ONBOARDING OVERLAY -->
+<div id="onboardingOverlay">
+  <button id="onboardingSkip">Skip</button>
+  <div class="ob-track-wrap">
+    <div class="ob-track" id="obTrack">
+
+      <!-- Card 1: Welcome -->
+      <div class="ob-card">
+        <div class="ob-illustration">🥋</div>
+        <div class="ob-heading">Welcome to BJJ Atlas</div>
+        <div class="ob-sub">Your visual map of every position, submission, and path in Brazilian Jiu-Jitsu.</div>
+      </div>
+
+      <!-- Card 2: Explore Positions -->
+      <div class="ob-card">
+        <div class="ob-illustration">🗺️</div>
+        <div class="ob-heading">Explore Positions</div>
+        <div class="ob-sub">Navigate an interactive graph of guards, passes, sweeps, and submissions — all connected the way they flow on the mat.</div>
+      </div>
+
+      <!-- Card 3: Build Your Game -->
+      <div class="ob-card">
+        <div class="ob-illustration">⚔️</div>
+        <div class="ob-heading">Build Your Game</div>
+        <div class="ob-sub">Create custom paths that reflect your A-game. Chain your favourite positions into a personalized roadmap.</div>
+      </div>
+
+      <!-- Card 4: Track Your Journey -->
+      <div class="ob-card">
+        <div class="ob-illustration">📈</div>
+        <div class="ob-heading">Track Your Journey</div>
+        <div class="ob-sub">Log training sessions, set goals, and watch your game evolve over time. Your mat time, mapped.</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="ob-dots" id="obDots">
+    <div class="ob-dot active" data-i="0"></div>
+    <div class="ob-dot" data-i="1"></div>
+    <div class="ob-dot" data-i="2"></div>
+    <div class="ob-dot" data-i="3"></div>
+  </div>
+  <button id="obGetStarted">Get Started</button>
+</div>
 
 <!-- HEADER -->
 <div class="header">
@@ -3683,6 +3830,60 @@ function getAllOpponentStats(){
 drawGraph();
 
 // Handle resize
+// ── ONBOARDING ────────────────────────────────────────────────────
+(function(){
+  const overlay  = document.getElementById('onboardingOverlay');
+  const track    = document.getElementById('obTrack');
+  const dots     = document.querySelectorAll('.ob-dot');
+  const btnStart = document.getElementById('obGetStarted');
+  const btnSkip  = document.getElementById('onboardingSkip');
+  const CARDS    = 4;
+  let current    = 0;
+  let startX     = 0;
+  let dragging   = false;
+
+  // Skip if already seen
+  if (localStorage.getItem('bjj_onboarded')) {
+    overlay.classList.add('hidden');
+    return;
+  }
+
+  function goTo(n) {
+    current = Math.max(0, Math.min(CARDS - 1, n));
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    if (current === CARDS - 1) {
+      btnStart.classList.add('visible');
+    }
+  }
+
+  function dismiss() {
+    localStorage.setItem('bjj_onboarded', '1');
+    overlay.classList.add('hidden');
+  }
+
+  btnStart.addEventListener('click', dismiss);
+  btnSkip.addEventListener('click', dismiss);
+  dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.i)));
+
+  // Touch / mouse swipe
+  track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; }, { passive:true });
+  track.addEventListener('touchend',   e => {
+    if (!dragging) return; dragging = false;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+  });
+  track.addEventListener('mousedown',  e => { startX = e.clientX; dragging = true; });
+  track.addEventListener('mouseup',    e => {
+    if (!dragging) return; dragging = false;
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+  });
+  track.addEventListener('mouseleave', () => { dragging = false; });
+
+  goTo(0);
+})();
+
 window.addEventListener('resize',()=>{
   const nw=window.innerWidth, nh=window.innerHeight;
   canvas.width=nw*dpr; canvas.height=nh*dpr;
