@@ -145,6 +145,65 @@ body {
 }
 canvas { display:block; }
 
+/* ─── SETTINGS DRAWER ─── */
+.settings-backdrop {
+  position:fixed; top:0; left:0; right:0; bottom:0; z-index:600;
+  background:rgba(44,24,16,0.35);
+  opacity:0; pointer-events:none;
+  transition:opacity 0.3s;
+}
+.settings-backdrop.open { opacity:1; pointer-events:all; }
+.settings-drawer {
+  position:fixed; top:0; left:0; bottom:0; z-index:601;
+  width:min(300px, 85vw);
+  background:var(--bg);
+  box-shadow:4px 0 24px rgba(44,24,16,0.18);
+  transform:translateX(-100%);
+  transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);
+  display:flex; flex-direction:column;
+  overflow-y:auto;
+  padding-top:max(20px, env(safe-area-inset-top));
+  padding-bottom:max(20px, env(safe-area-inset-bottom));
+}
+.settings-drawer.open { transform:translateX(0); }
+.settings-drawer-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 20px 20px;
+  border-bottom:1px solid var(--border);
+}
+.settings-drawer-title { font-size:20px; font-weight:800; color:var(--text-primary); }
+.settings-drawer-close {
+  width:32px; height:32px; border-radius:16px; border:none;
+  background:var(--surface2); color:var(--text-secondary);
+  font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-family:inherit; touch-action:manipulation;
+}
+.settings-section {
+  padding:16px 20px 8px;
+}
+.settings-section-label {
+  font-size:10px; font-weight:700; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px;
+}
+.settings-row {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 0; border-bottom:1px solid var(--border);
+  cursor:pointer; touch-action:manipulation;
+}
+.settings-row:last-child { border-bottom:none; }
+.settings-row-icon {
+  width:36px; height:36px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; flex-shrink:0;
+}
+.settings-row-label { font-size:15px; font-weight:500; color:var(--text-primary); flex:1; }
+.settings-row-chevron { color:var(--text-muted); font-size:14px; }
+.settings-app-info {
+  padding:20px; text-align:center; margin-top:auto;
+}
+.settings-app-name { font-size:16px; font-weight:800; color:var(--text-primary); }
+.settings-app-version { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
 /* ─── BOTTOM NAV ─── */
 .bottom-nav {
   position:fixed; bottom:0; left:0; right:0; z-index:100;
@@ -199,8 +258,8 @@ canvas { display:block; }
   box-shadow:var(--shadow-sm);
 }
 
-.focus-canvas-wrap { flex:1; position:relative; }
-.focus-canvas { width:100%; height:100%; }
+.focus-canvas-wrap { flex:1; position:relative; min-height:0; overflow:hidden; }
+.focus-canvas { width:100%; height:100%; display:block; }
 
 /* ─── PANEL BACKDROP ─── */
 .panel-backdrop {
@@ -406,6 +465,8 @@ canvas { display:block; }
   background:var(--bg);
   transform:translateY(-100%);
   transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+  will-change:transform;
+  isolation:isolate;
 }
 .search-overlay.open { transform:translateY(0); }
 .search-bar {
@@ -419,8 +480,9 @@ canvas { display:block; }
 }
 .search-input::placeholder { color:var(--text-muted); }
 .search-cancel {
-  border:none; background:none; color:var(--accent);
-  font-size:15px; font-weight:500; cursor:pointer; font-family:inherit;
+  border:none; background:none; color:#d93651;
+  font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;
+  padding:0 4px;
 }
 .search-results { padding:12px 16px; overflow-y:auto; height:calc(100vh - 60px); }
 .search-result {
@@ -442,7 +504,7 @@ canvas { display:block; }
   display:flex; align-items:center; justify-content:center;
   font-size:10px; font-weight:700; color:white;
 }
-.technique-step > div { font-size:12px; color:var(--text-secondary); line-height:1.4; }
+.technique-step > div { font-size:13px; color:var(--text-primary); line-height:1.4; }
 
 /* ─── PATH BUILDER ─── */
 .path-overlay {
@@ -624,6 +686,7 @@ canvas { display:block; }
   padding:8px 16px; border-radius:8px; border:1px solid var(--accent);
   background:var(--accent)11; color:var(--accent); font-size:13px;
   font-weight:600; cursor:pointer; margin-top:8px;
+  font-family:inherit; touch-action:manipulation;
 }
 .opponent-record {
   display:flex; gap:12px; font-size:12px; color:var(--text-muted); margin-top:4px;
@@ -816,11 +879,65 @@ canvas { display:block; }
   <button id="obGetStarted">Get Started</button>
 </div>
 
+<!-- SETTINGS DRAWER -->
+<div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
+<div class="settings-drawer" id="settingsDrawer">
+  <div class="settings-drawer-header">
+    <div class="settings-drawer-title">Grapple Flow</div>
+    <button class="settings-drawer-close" onclick="closeSettings()">✕</button>
+  </div>
+  <div class="settings-section">
+    <div class="settings-section-label">App</div>
+    <div class="settings-row" onclick="closeSettings()">
+      <div class="settings-row-icon" style="background:#B5352A18">🗺️</div>
+      <div class="settings-row-label">Graph View</div>
+      <div class="settings-row-chevron">›</div>
+    </div>
+    <div class="settings-row" onclick="closeSettings();switchView('journal')">
+      <div class="settings-row-icon" style="background:#C4872A18">📓</div>
+      <div class="settings-row-label">Training Journal</div>
+      <div class="settings-row-chevron">›</div>
+    </div>
+    <div class="settings-row" onclick="closeSettings();switchView('paths')">
+      <div class="settings-row-icon" style="background:#2A8B7A18">🔗</div>
+      <div class="settings-row-label">Path Builder</div>
+      <div class="settings-row-chevron">›</div>
+    </div>
+    <div class="settings-row" onclick="closeSettings();switchView('me')">
+      <div class="settings-row-icon" style="background:#7A3D6A18">👤</div>
+      <div class="settings-row-label">My Profile</div>
+      <div class="settings-row-chevron">›</div>
+    </div>
+  </div>
+  <div class="settings-section">
+    <div class="settings-section-label">Data</div>
+    <div class="settings-row" onclick="exportAppData()">
+      <div class="settings-row-icon" style="background:#2A8B7A18">📤</div>
+      <div class="settings-row-label">Export My Data</div>
+      <div class="settings-row-chevron">›</div>
+    </div>
+    <div class="settings-row" onclick="resetMyGame()">
+      <div class="settings-row-icon" style="background:#B5352A18">🗑️</div>
+      <div class="settings-row-label">Reset My Game</div>
+      <div class="settings-row-chevron">›</div>
+    </div>
+  </div>
+  <div class="settings-app-info">
+    <div class="settings-app-name">Grapple Flow</div>
+    <div class="settings-app-version">BJJ Positional Atlas · v1.0</div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <div class="header">
-  <div>
-    <div class="header-title">BJJ ATLAS</div>
-    <div class="header-subtitle">Positional Atlas</div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="header-btn" onclick="openSettings()" aria-label="Menu" style="touch-action:manipulation">
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="0" y1="1" x2="18" y2="1"/><line x1="0" y1="7" x2="18" y2="7"/><line x1="0" y1="13" x2="18" y2="13"/></svg>
+    </button>
+    <div>
+      <div class="header-title">BJJ ATLAS</div>
+      <div class="header-subtitle">Positional Atlas</div>
+    </div>
   </div>
   <div class="header-right">
     <button class="header-btn" onclick="openSearch()" aria-label="Search">
@@ -965,14 +1082,14 @@ canvas { display:block; }
 // ═══════════════════════════════════════════════
 //  FIREBASE CONFIG & INIT
 // ═══════════════════════════════════════════════
-// TODO: Replace with your Firebase project config from console.firebase.google.com
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCmG_1ISlnxSUmpWgfvUU7bgzD2Qy38hiY",
+  authDomain: "bjj-atlas-2321e.firebaseapp.com",
+  projectId: "bjj-atlas-2321e",
+  storageBucket: "bjj-atlas-2321e.firebasestorage.app",
+  messagingSenderId: "166528273943",
+  appId: "1:166528273943:web:6d722a753a8f64ec071652",
+  measurementId: "G-E57DZDMY01"
 };
 
 let auth = null, db = null;
@@ -1014,7 +1131,7 @@ const TYPES = {
   guard:'#3D7EA6', top:'#A63D3D', back:'#3D7A5A',
   neutral:'#8B7A3D', leg:'#7A3D6A'
 };
-const EDGE_COLORS = { submission:'#B5352A', sweep:'#2A8B7A', transition:'#C4872A' };
+const EDGE_COLORS = { submission:'#B5352A', sweep:'#2A8B7A', transition:'#C4872A', escape:'#4A7FA5' };
 
 const POSITION_VIDEOS = {
   'closed_guard': [
@@ -1598,7 +1715,33 @@ const edges = [
   {from:'fifty_fifty',to:'open_guard',type:'transition',label:'Back Step Out',desc:"Disentangle your legs and back out to reset. Use this when you're losing the grip fight on their foot.",
    steps:['Get heel hook grip','Apply rotating pressure','Finish submission']},
   {from:'fifty_fifty',to:'guard_top',type:'submission',label:'Calf Slicer',desc:"Fold their leg and drive your shin into their calf. A compression lock that forces a tap or creates an opening to pass.",
-   steps:['Control toes','Apply toe hold grip','Finish pressure']}
+   steps:['Control toes','Apply toe hold grip','Finish pressure']},
+
+  // ── ESCAPE EDGES (bottom-player view) ──
+  {from:'side_control',to:'half_guard',type:'escape',label:'Shrimp to Half Guard',desc:"Bridge to create space, shrimp your hips away, frame with your near elbow, and catch their near leg between yours to land in half guard.",
+   steps:['Bridge explosively to create space','Shrimp hips away from opponent','Frame near elbow on shoulder to prevent crossface','Bring near knee across to trap their leg','Establish half guard position']},
+  {from:'side_control',to:'closed_guard',type:'escape',label:'Guard Recovery',desc:"Frame on their shoulder and hip, bridge to make space, then pull your bottom knee through to recover full guard.",
+   steps:['Frame with elbow on shoulder, hand on hip','Bridge away to create space','Pull bottom knee through the gap','Hook legs around their waist','Lock closed guard']},
+  {from:'side_control',to:'open_guard',type:'escape',label:'Frame & Recover Open Guard',desc:"Stiff-arm frame on their shoulder to keep distance, hip escape to create room, and recover open guard with feet on hips.",
+   steps:['Post stiff elbow frame on shoulder','Hip escape to create space','Bring both knees to chest','Place feet on their hips or biceps','Establish open guard framing']},
+  {from:'mount',to:'half_guard',type:'escape',label:'Elbow-Knee Escape',desc:"The fundamental mount escape. Create a frame by driving your elbow to your knee, shrimp to the side, and catch their leg in half guard.",
+   steps:['Protect neck by keeping elbows tight and chin down','Bridge and shrimp explosively to one side','Drive elbow down toward knee to close the frame gap','Shoot knee across to capture their leg','Work to full guard from half guard position']},
+  {from:'mount',to:'closed_guard',type:'escape',label:'Bridge & Roll',desc:"Time their posture-up moment, trap one arm, and bridge explosively to roll them over your shoulder into their guard.",
+   steps:['Wait for them to post a hand or posture up','Trap near arm with your same-side elbow and hand','Bridge explosively to the trapped-arm side','Roll them over your shoulder as you turn','End in their guard — posture up immediately']},
+  {from:'north_south',to:'half_guard',type:'escape',label:'Roll to Half Guard',desc:"Tuck chin, protect neck, bridge toward one hip, and use momentum to roll under them catching their leg in half guard.",
+   steps:['Tuck chin and protect neck with both hands','Bridge toward one of their legs','Roll under and to the side','Shoot your legs to catch theirs','Establish half guard with underhook fight']},
+  {from:'north_south',to:'closed_guard',type:'escape',label:'Sit Up & Recover Guard',desc:"Create space with a bridge, sit up into them, and lock a body lock or closed guard as they try to re-establish.",
+   steps:['Bridge to break their weight','Sit up explosively into them','Wrap body or grab their hips','Kick legs up to lock closed guard','Control posture from guard']},
+  {from:'knee_on_belly',to:'closed_guard',type:'escape',label:'Push Knee & Recover Guard',desc:"Frame both hands on their knee, push it off your belly, shrimp away before they can reset, then recover guard.",
+   steps:['Frame both hands on their knee','Explosively push knee off your body','Shrimp hips away before they react','Pull knees to chest','Recover closed or open guard']},
+  {from:'knee_on_belly',to:'half_guard',type:'escape',label:'Turn & Half Guard',desc:"Turn toward them as you push the knee, catching their leg between yours to land directly in half guard.",
+   steps:['Push knee off while turning toward them','Shrimp into them (not away)','Catch near leg between yours','Use underhook to come up to your side','Threaten sweep from half guard']},
+  {from:'scarf_hold',to:'half_guard',type:'escape',label:'Roll Out of Kesa',desc:"Rock toward them to relieve pressure on your shoulder, create space under the trapped arm, and roll to recover guard.",
+   steps:['Bridge toward them to ease shoulder pressure','Rock to create momentum','Slip trapped arm free or lift their hip','Roll away from the pin','Recover half guard with underhook']},
+  {from:'back_control',to:'closed_guard',type:'escape',label:'Strip Seat Belt & Face Them',desc:"Work the choking arm down away from your neck, bridge away from it, spin to face your opponent, and recover guard.",
+   steps:['Tuck chin to protect against choke','Two-on-one the top (choking) arm to strip it','Bridge away from the choking-arm side','Create space and spin to face them','Lock closed guard or scramble to top']},
+  {from:'half_guard_top',to:'half_guard',type:'escape',label:'Underhook Recovery',desc:"Fight off the crossface, win the underhook battle, get to your side, and use hip movement to threaten a sweep and regain guard.",
+   steps:['Block crossface with your near elbow','Fight for underhook — whoever wins it wins the position','Get to your side with head off the mat','Use hip bumps and leg movement to create space','Threaten dog-fight sweep or recover to full guard']}
 ];
 
 // ═══════════════════════════════════════════════
@@ -1741,8 +1884,8 @@ function drawGraph(){
     const isHighlighted = activePath && apEdges.has(e);
     const isTappedEdge = tappedNode && (e.from===tappedNode.id || e.to===tappedNode.id);
     const isDimmed = (activePath && !isHighlighted) || (tappedNode && !isTappedEdge && !activePath);
-    ctx.strokeStyle = isDimmed ? '#E8E0D4' : (isHighlighted ? color : (isTappedEdge ? color+'88' : color+'22'));
-    ctx.lineWidth = isHighlighted ? 3 : (isTappedEdge ? 1.5 : 0.7);
+    ctx.strokeStyle = isDimmed ? '#E8E0D4' : (isHighlighted ? color : (isTappedEdge ? color+'CC' : color+'55'));
+    ctx.lineWidth = isHighlighted ? 3 : (isTappedEdge ? 2 : 1.0);
     // Curved edges
     const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
     const dx=b.x-a.x, dy=b.y-a.y;
@@ -2080,38 +2223,43 @@ function drawFocusView(){
 
   fctx.clearRect(0,0,fw,fh);
   focusEdgeLabels = [];
-  const cx=fw/2, cy=fh/2-20;
+  const cx=fw/2, cy=fh*0.50;
 
   // Get connected edges
   let connected;
-  if(perspective==='top'){
-    connected=edges.filter(e=>e.from===focusNode.id);
+  if(perspective==='bottom' && focusNode.type !== 'guard'){
+    // Non-guard position, bottom player = defensive — show escape routes
+    connected=edges.filter(e=>e.from===focusNode.id && e.type==='escape');
+    // Fall back to all outgoing if no escapes defined yet
+    if(!connected.length) connected=edges.filter(e=>e.from===focusNode.id && e.type!=='escape');
   } else {
-    connected=edges.filter(e=>e.to===focusNode.id);
+    // Top player or guard (guard = bottom is attacking) — show attacks/transitions
+    connected=edges.filter(e=>e.from===focusNode.id && e.type!=='escape');
   }
 
-  // Get unique targets
-  const targetIds=[...new Set(connected.map(e=>perspective==='top'?e.to:e.from))];
+  // Get unique targets — always use e.to (destination)
+  const targetIds=[...new Set(connected.map(e=>e.to))];
   const targets=targetIds.map(id=>positions.find(p=>p.id===id)).filter(Boolean);
 
-  // Radial layout — use 40% of the smaller dimension for a larger orbit on mobile
-  const radius=Math.min(fw,fh)*0.40;
+  // Radial layout — use 44% of the smaller dimension for a larger orbit
+  const radius=Math.min(fw,fh)*0.44;
+  const cy_center = fh * 0.50; // true vertical center of available canvas
   const targetPositions=targets.map((t,i)=>{
     const angle=(i/targets.length)*Math.PI*2 - Math.PI/2;
-    return {node:t, x:cx+Math.cos(angle)*radius, y:cy+Math.sin(angle)*radius};
+    return {node:t, x:cx+Math.cos(angle)*radius, y:cy_center+Math.sin(angle)*radius};
   });
 
   // Group edges by target for label offset
   const edgesByTarget = {};
   connected.forEach(e => {
-    const targetId = perspective==='top' ? e.to : e.from;
+    const targetId = e.to;
     if(!edgesByTarget[targetId]) edgesByTarget[targetId] = [];
     edgesByTarget[targetId].push(e);
   });
 
   // Draw edges
   connected.forEach(e=>{
-    const targetId=perspective==='top'?e.to:e.from;
+    const targetId=e.to;
     const tp=targetPositions.find(t=>t.node.id===targetId);
     if(!tp) return;
     const color=EDGE_COLORS[e.type];
@@ -2352,7 +2500,7 @@ function openDetail(node){
     subs.forEach((s,idx)=>{
       const tv = TECHNIQUE_VIDEOS[s.label];
       const videoLink = tv ? ` <a href="${tv.url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:11px;font-weight:500;text-decoration:none;white-space:nowrap">&#9654; ${tv.channel}</a>` : '';
-      const descHtml = s.desc ? `<div style="font-size:13px;color:#6B5744;line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
+      const descHtml = s.desc ? `<div style="font-size:13px;color:var(--text-primary);line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
       const stepsHtml = s.steps ? s.steps.map((step,i)=>`<div class="technique-step"><span class="technique-step-num" style="background:var(--sub)">${i+1}</span><div>${step}</div></div>`).join('') : '';
       html+=`<div class="detail-card technique-card" style="border-left:3px solid var(--sub);cursor:pointer" onclick="toggleTechniqueSteps(this)">
         <div class="detail-card-title" style="color:var(--sub);display:flex;align-items:center;gap:6px;flex-wrap:wrap">${s.label}${videoLink}</div>
@@ -2367,7 +2515,7 @@ function openDetail(node){
     sweeps.forEach((s,idx)=>{
       const tv = TECHNIQUE_VIDEOS[s.label];
       const videoLink = tv ? ` <a href="${tv.url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:11px;font-weight:500;text-decoration:none;white-space:nowrap">&#9654; ${tv.channel}</a>` : '';
-      const descHtml = s.desc ? `<div style="font-size:13px;color:#6B5744;line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
+      const descHtml = s.desc ? `<div style="font-size:13px;color:var(--text-primary);line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
       const stepsHtml = s.steps ? s.steps.map((step,i)=>`<div class="technique-step"><span class="technique-step-num" style="background:var(--sweep)">${i+1}</span><div>${step}</div></div>`).join('') : '';
       html+=`<div class="detail-card technique-card" style="border-left:3px solid var(--sweep);cursor:pointer" onclick="toggleTechniqueSteps(this)">
         <div class="detail-card-title" style="color:var(--sweep);display:flex;align-items:center;gap:6px;flex-wrap:wrap">${s.label}${videoLink}</div>
@@ -2382,7 +2530,7 @@ function openDetail(node){
     trans.forEach((s,idx)=>{
       const tv = TECHNIQUE_VIDEOS[s.label];
       const videoLink = tv ? ` <a href="${tv.url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:11px;font-weight:500;text-decoration:none;white-space:nowrap">&#9654; ${tv.channel}</a>` : '';
-      const descHtml = s.desc ? `<div style="font-size:13px;color:#6B5744;line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
+      const descHtml = s.desc ? `<div style="font-size:13px;color:var(--text-primary);line-height:1.4;margin-bottom:8px">${s.desc}</div>` : '';
       const stepsHtml = s.steps ? s.steps.map((step,i)=>`<div class="technique-step"><span class="technique-step-num" style="background:var(--transition)">${i+1}</span><div>${step}</div></div>`).join('') : '';
       html+=`<div class="detail-card technique-card" style="border-left:3px solid var(--transition);cursor:pointer" onclick="toggleTechniqueSteps(this)">
         <div class="detail-card-title" style="color:var(--transition);display:flex;align-items:center;gap:6px;flex-wrap:wrap">${s.label}${videoLink}</div>
@@ -2458,7 +2606,7 @@ function showTechniquePopup(edge) {
   `;
 
   if(edge.desc) {
-    html += `<div style="font-size:14px;color:#6B5744;line-height:1.5;margin-bottom:14px;padding:10px 12px;background:#FAF6F0;border-radius:10px">${edge.desc}</div>`;
+    html += `<div style="font-size:14px;color:var(--text-primary);line-height:1.5;margin-bottom:14px;padding:10px 12px;background:#FAF6F0;border-radius:10px">${edge.desc}</div>`;
   }
 
   if(edge.steps && edge.steps.length) {
@@ -2511,6 +2659,38 @@ document.getElementById('detailPanel').addEventListener('touchmove',e=>{
 });
 
 // ═══════════════════════════════════════════════
+//  SETTINGS DRAWER
+// ═══════════════════════════════════════════════
+function openSettings(){
+  document.getElementById('settingsDrawer').classList.add('open');
+  document.getElementById('settingsBackdrop').classList.add('open');
+}
+function closeSettings(){
+  document.getElementById('settingsDrawer').classList.remove('open');
+  document.getElementById('settingsBackdrop').classList.remove('open');
+}
+function exportAppData(){
+  const data = {
+    myGame: [...myGame],
+    journalEntries,
+    savedPaths,
+    trainingGoals,
+    exportedAt: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'grapple-flow-export.json';
+  a.click(); URL.revokeObjectURL(url);
+  closeSettings();
+}
+function resetMyGame(){
+  if(!confirm('Reset your starred positions? This cannot be undone.')) return;
+  myGame.clear(); saveMyGame(); drawGraph();
+  closeSettings();
+}
+
+// ═══════════════════════════════════════════════
 //  SEARCH
 // ═══════════════════════════════════════════════
 function openSearch(){
@@ -2521,6 +2701,8 @@ function openSearch(){
 function closeSearch(){
   document.getElementById('searchOverlay').classList.remove('open');
   document.getElementById('searchInput').value='';
+  tappedNode = null;
+  drawGraph();
 }
 function filterSearch(){
   const q=document.getElementById('searchInput').value.toLowerCase();
